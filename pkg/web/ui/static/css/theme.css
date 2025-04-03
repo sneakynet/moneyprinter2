@@ -1,0 +1,74 @@
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+td {
+    padding: 0.25rem;
+}
+
+#content {
+    max-width: 80%;
+}
+
+#logomark {
+    font-weight: 800;
+}
+
+#nav {
+    background-color: #e0e0e0;
+    width: 100%;
+}
+
+.box {
+    padding: 1em;
+    border: 1px solid black;
+    border-radius: 4px;
+    width: auto;
+    height: auto;
+}
+
+.center {
+    text-align: center;
+}
+
+.background {
+    background-color: #7e7e7e;
+}
+
+.foreground {
+    background-color: #f9f9f9;
+}
+
+.flex-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.flex-item {
+    padding: 1em;
+}
+
+.flex-max {
+    flex-grow: 1;
+}
+
+.flex-less {
+    flex-shrink: 3;
+}
+
+.full-height {
+    height: 100%;
+}

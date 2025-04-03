@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MoneyPrinter{% endblock %}</title>
+    <link href="/static/css/reset.css" rel="stylesheet">
+    <link href="/static/css/theme.css" rel="stylesheet">
+    {% block head %}
+    {% endblock %}
+  </head>
+  <body class="background">
+    {% include "fragments/nav.p2" %}
+    <div id="content">
+      {% block content %}
+      {% endblock %}
+    </div>
+  </body>
+</html>

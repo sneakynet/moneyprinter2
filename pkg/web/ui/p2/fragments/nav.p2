@@ -1,0 +1,11 @@
+<div id="nav" class="foreground flex-container flex-row">
+  <div class="flex-item">
+    <span id="logomark">MoneyPrinter</span>
+  </div>
+  <div class="flex-item flex-max">
+    Navigation
+  </div>
+  <div class="flex-item">
+    Login
+  </div>
+</div>
