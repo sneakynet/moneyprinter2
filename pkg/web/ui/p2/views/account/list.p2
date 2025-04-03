@@ -1,0 +1,41 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Accounts | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item flex-max foreground box">
+      <div class="flex-container flex-center flex-row">
+        <a class="flex-item button" href="/ui/admin/accounts/new">Add Single</a>
+        <a class="flex-item button" href="/ui/admin/accounts/bulk">Add Many</a>
+      </div>
+      <hr />
+      <div class="flex-container flex-center">
+      <table class="flex-item">
+        <tr>
+          <th>ID</th>
+          <th>Account Name</th>
+          <th>Account Contact</th>
+          <th>Account Alias</th>
+          <th>Actions</th>
+        </tr>
+        {% for account in accounts %}
+          <tr>
+            <td>{{ account.ID }}</td>
+            <td>{{ account.Name }}</td>
+            <td>{{ account.Contact }}</td>
+            <td>{{ account.Alias }}</td>
+            <td>
+              <a href="/ui/admin/accounts/{{ account.ID }}">Detail</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan=5 class="center">There are no accounts here.</td>
+          </tr>
+        {% endfor %}
+      </table>
+      </div>
+    </div>
+  </div>
+{% endblock %}

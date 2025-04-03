@@ -3,7 +3,16 @@
     <span id="logomark">MoneyPrinter</span>
   </div>
   <div class="flex-item flex-max">
-    Navigation
+    <nav>
+      <div class="nav-container">
+        <span class="nav-header">Accounts</span>
+        <div class="nav-dropdown">
+          <a class="nav-item" href="/ui/admin/accounts/">List</a>
+          <a class="nav-item" href="/ui/admin/accounts/new">Create</a>
+          <a class="nav-item" href="/ui/admin/accounts/bulk">Bulk Upload</a>
+        </div>
+      </div>
+    </nav>
   </div>
   <div class="flex-item">
     Login

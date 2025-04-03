@@ -12,17 +12,6 @@ import (
 	"github.com/flosch/pongo2/v6"
 )
 
-// Server handles the HTTP frontend.
-type Server struct {
-	r chi.Router
-	n *http.Server
-
-	tpl *pongo2.TemplateSet
-}
-
-// Option configures the Server
-type Option func(*Server) error
-
 // New returns a ready to serve webserver.
 func New(opts ...Option) (*Server, error) {
 	s := new(Server)
@@ -41,7 +30,6 @@ func New(opts ...Option) (*Server, error) {
 	s.tpl = pongo2.NewSet("html", ldr)
 	_, s.tpl.Debug = os.LookupEnv("PONGO2_DEBUG")
 
-
 	for _, o := range opts {
 		o(s)
 	}
@@ -52,6 +40,18 @@ func New(opts ...Option) (*Server, error) {
 
 	s.r.Get("/", s.landing)
 	s.r.Get("/login", s.login)
+
+	s.r.Route("/ui/admin", func(a chi.Router) {
+		a.Route("/accounts", func(r chi.Router) {
+			r.Get("/", s.uiViewAccountList)
+			r.Get("/{id}", s.uiViewAccountDetail)
+			r.Get("/new", s.uiViewAccountFormSingle)
+			r.Get("/bulk", s.uiViewAccountFormBulk)
+
+			r.Post("/new", s.uiAccountFormSubmitSingle)
+			r.Post("/bulk", s.uiAccountFormSubmitBulk)
+		})
+	})
 
 	return s, nil
 }

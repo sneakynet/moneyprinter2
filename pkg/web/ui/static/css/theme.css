@@ -3,12 +3,39 @@ html, body {
     height: 100%;
 }
 
+h2 {
+    font-size: large;
+    font-weight: 600;
+    margin-bottom: 0.7em;
+}
+
+h3 {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
 td {
     padding: 0.25rem;
 }
 
+nav a {
+    color: #000000;
+    text-decoration: none;
+}
+
+table, tbody, th, td {
+    padding: 0.5em;
+}
+
+tr:nth-child(even) {
+    background-color: #efefef;
+}
+
 #content {
     max-width: 80%;
+    margin-top: 1em;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #logomark {
@@ -34,6 +61,21 @@ td {
 
 .background {
     background-color: #7e7e7e;
+}
+
+.button {
+    color: #000000;
+    display: inline-block;
+    background-color: #dddddd;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 100ms linear;
+    margin: 0.25em;
+}
+
+.button:hover {
+    background-color: #eeeeee;
+    transition: background-color 100ms linear;
 }
 
 .foreground {
@@ -71,4 +113,37 @@ td {
 
 .full-height {
     height: 100%;
+}
+
+.nav-header {
+    font-weight: 475;
+}
+
+.nav-container {
+    display: inline-block;
+    position: relative;
+}
+
+.nav-dropdown {
+    display: none;
+    position: absolute;
+    background-color: #dddddd;
+    border: 2px black solid;
+}
+
+.nav-container:hover .nav-dropdown {
+    display: block;
+}
+
+.nav-item {
+    text-decoration: none;
+    display: inline-block;
+    padding: 0.5em;
+    min-width: 160px;
+    transition: background-color 100ms linear;
+}
+
+.nav-item:hover {
+    background-color: #eeeeee;
+    transition: background-color 100ms linear;
 }

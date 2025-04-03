@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/sneakynet/moneyprinter2/pkg/web"
+	"github.com/sneakynet/moneyprinter2/pkg/db"
 )
 
 var (
@@ -27,7 +28,28 @@ func init() {
 }
 
 func serveCmdRun(c *cobra.Command, args []string) {
-	s, err := web.New()
+	db, err := db.New()
+	if err != nil {
+		slog.Error("Error creating database", "error", err)
+		return
+	}
+
+	dbPath := os.Getenv("MONEYPRINTER_DB")
+	if dbPath == "" {
+		dbPath = "moneyprinter.db"
+	}
+
+	if err := db.Connect(dbPath); err != nil {
+		slog.Error("Error connecting to database", "error", err)
+		return
+	}
+
+	if err := db.Migrate(); err != nil {
+		slog.Error("Error migrating database", "error", err)
+		return
+	}
+
+	s, err := web.New(web.WithDB(db))
 	if err != nil {
 		slog.Error("Error creating webserver", "error", err)
 		return
