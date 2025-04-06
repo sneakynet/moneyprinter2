@@ -1,0 +1,36 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Premises | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item flex-max foreground box">
+      <div class="flex-container flex-center flex-row">
+        <a class="flex-item button" href="/ui/admin/geo/premises/new">Add Single</a>
+        <a class="flex-item button" href="/ui/admin/geo/premises/bulk">Add Many</a>
+      </div>
+      <hr />
+      <div class="flex-container flex-center">
+        <table>
+          <tr>
+            <th>Wirecenter</th>
+            <th>Address</th>
+            <th>Nickname</th>
+            <th>Actions</th>
+          </tr>
+          {% for premise in premises %}
+            <tr>
+              <td>{{ premise.Wirecenter.Name }}</td>
+              <td>{{ premise.Address }}</td>
+              <td>{{ premise.Alias }}</td>
+              <td class="flex-container flex-row">
+                <form class="flex-item" action="/ui/admin/geo/premises/{{ premise.ID }}/delete" method="post"><input type="submit" value="Delete" /></form>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

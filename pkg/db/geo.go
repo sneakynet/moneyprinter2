@@ -33,3 +33,22 @@ func (db *DB) WirecenterDelete(wc *types.Wirecenter) error {
 	res := db.d.Delete(wc)
 	return res.Error
 }
+
+// PremiseSave persists a premise to the database.
+func (db *DB) PremiseSave(p *types.Premise) (uint, error) {
+	res := db.d.Save(p)
+	return p.ID, res.Error
+}
+
+// PremiseList returns a list pf premises filtered by the provided
+// instance.
+func (db *DB) PremiseList(filter *types.Premise) ([]types.Premise, error) {
+	premises := []types.Premise{}
+	res := db.d.Where(filter).Preload(clause.Associations).Find(&premises)
+	return premises, res.Error
+}
+
+// PremiseDelete removes a premise permanently
+func (db *DB) PremiseDelete(p *types.Premise) error {
+	return db.d.Delete(p).Error
+}

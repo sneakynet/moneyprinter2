@@ -3,8 +3,8 @@ package web
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/flosch/pongo2/v6"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
@@ -31,4 +31,8 @@ type DB interface {
 	WirecenterGet(*types.Wirecenter) (types.Wirecenter, error)
 	WirecenterDelete(*types.Wirecenter) error
 	WirecenterSave(*types.Wirecenter) (uint, error)
+
+	PremiseSave(*types.Premise) (uint, error)
+	PremiseList(*types.Premise) ([]types.Premise, error)
+	PremiseDelete(*types.Premise) error
 }

@@ -1,9 +1,9 @@
 package web
 
 import (
-	"net/http"
 	"fmt"
 	"log/slog"
+	"net/http"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"

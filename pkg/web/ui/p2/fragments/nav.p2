@@ -16,6 +16,7 @@
         <div class="nav-header">Geo</div>
         <div class="nav-dropdown">
           <a class="nav-item" href="/ui/admin/geo/wirecenters/">Wirecenters</a>
+          <a class="nav-item" href="/ui/admin/geo/premises/">Premises</a>
         </div>
       </div>
     </nav>

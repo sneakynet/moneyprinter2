@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/sneakynet/moneyprinter2/pkg/web"
 	"github.com/sneakynet/moneyprinter2/pkg/db"
+	"github.com/sneakynet/moneyprinter2/pkg/web"
 )
 
 var (

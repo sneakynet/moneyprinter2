@@ -1,15 +1,15 @@
 package web
 
 import (
-	"os"
-	"log/slog"
-	"io/fs"
-	"net/http"
 	"context"
+	"io/fs"
+	"log/slog"
+	"net/http"
+	"os"
 
+	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/flosch/pongo2/v6"
 )
 
 // New returns a ready to serve webserver.
@@ -51,16 +51,30 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/new", s.uiAccountFormSubmitSingle)
 			r.Post("/bulk", s.uiAccountFormSubmitBulk)
 		})
-		a.Route("/geo/wirecenters", func(r chi.Router) {
-			r.Get("/", s.uiViewWirecenterList)
-			r.Get("/{id}", s.uiViewWirecenterDetail)
-			r.Get("/{id}/edit", s.uiViewWirecenterFormEdit)
-			r.Post("/{id}/edit", s.uiViewWirecenterUpsert)
+		a.Route("/geo", func(b chi.Router) {
+			b.Route("/wirecenters", func(r chi.Router) {
+				r.Get("/", s.uiViewWirecenterList)
+				r.Get("/{id}", s.uiViewWirecenterDetail)
+				r.Get("/{id}/edit", s.uiViewWirecenterFormEdit)
+				r.Post("/{id}/edit", s.uiViewWirecenterUpsert)
 
-			r.Post("/{id}/delete", s.uiViewWirecenterDelete)
+				r.Post("/{id}/delete", s.uiViewWirecenterDelete)
 
-			r.Get("/new", s.uiViewWirecenterFormCreate)
-			r.Post("/new", s.uiViewWirecenterUpsert)
+				r.Get("/new", s.uiViewWirecenterFormCreate)
+				r.Post("/new", s.uiViewWirecenterUpsert)
+			})
+
+			b.Route("/premises", func(r chi.Router) {
+				r.Get("/", s.uiViewPremisesList)
+				r.Post("/{id}/delete", s.uiViewPremiseDelete)
+
+				r.Get("/new", s.uiViewPremisesFormSingle)
+				r.Post("/new", s.uiViewPremisesSubmitSingle)
+
+				r.Get("/bulk", s.uiViewPremisesFormBulk)
+				r.Post("/bulk", s.uiViewPremisesSubmitBulk)
+
+			})
 		})
 	})
 

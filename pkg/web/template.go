@@ -2,8 +2,8 @@ package web
 
 import (
 	"embed"
-	"net/http"
 	"fmt"
+	"net/http"
 
 	"github.com/flosch/pongo2/v6"
 )

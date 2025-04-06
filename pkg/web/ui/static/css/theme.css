@@ -119,6 +119,7 @@ tr:nth-child(even) {
     font-weight: 475;
     margin-left: 1em;
     margin-right: 1em;
+    margin-bottom: 0.25em;
 }
 
 .nav-container {
@@ -131,7 +132,6 @@ tr:nth-child(even) {
     position: absolute;
     background-color: #dddddd;
     border: 2px black solid;
-    margin-top: 0.25em;
 }
 
 .nav-container:hover .nav-dropdown {
