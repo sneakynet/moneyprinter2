@@ -26,4 +26,9 @@ type DB interface {
 	AccountCreate(*types.Account) (uint, error)
 	AccountList(*types.Account) ([]types.Account, error)
 	AccountGet(*types.Account) (types.Account, error)
+
+	WirecenterList(*types.Wirecenter) ([]types.Wirecenter, error)
+	WirecenterGet(*types.Wirecenter) (types.Wirecenter, error)
+	WirecenterDelete(*types.Wirecenter) error
+	WirecenterSave(*types.Wirecenter) (uint, error)
 }

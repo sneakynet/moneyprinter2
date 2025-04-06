@@ -51,6 +51,17 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/new", s.uiAccountFormSubmitSingle)
 			r.Post("/bulk", s.uiAccountFormSubmitBulk)
 		})
+		a.Route("/geo/wirecenters", func(r chi.Router) {
+			r.Get("/", s.uiViewWirecenterList)
+			r.Get("/{id}", s.uiViewWirecenterDetail)
+			r.Get("/{id}/edit", s.uiViewWirecenterFormEdit)
+			r.Post("/{id}/edit", s.uiViewWirecenterUpsert)
+
+			r.Post("/{id}/delete", s.uiViewWirecenterDelete)
+
+			r.Get("/new", s.uiViewWirecenterFormCreate)
+			r.Post("/new", s.uiViewWirecenterUpsert)
+		})
 	})
 
 	return s, nil
