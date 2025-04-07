@@ -1,0 +1,37 @@
+{% extends "../../base.p2" %}
+
+{% block title %}LEC | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item flex-max foreground box">
+      <div class="flex-container flex-center flex-row">
+        <a class="flex-item button" href="/ui/admin/lecs/new">Add Single</a>
+      </div>
+      <hr />
+      <div class="flex-container flex-center">
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Byline</th>
+            <th>Contact</th>
+            <th>Website</th>
+            <th>Actions</th>
+          </tr>
+          {% for lec in lecs %}
+            <tr>
+              <td>{{ lec.Name }}</td>
+              <td>{{ lec.Byline }}</td>
+              <td>{{ lec.Contact }}</td>
+              <td>{{ lec.Website }}</td>
+              <td class="flex-container flex-row">
+                <form class="flex-item" action="/ui/admin/lecs/{{ lec.ID }}/edit"><input type="submit" value="Edit" /></form>
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

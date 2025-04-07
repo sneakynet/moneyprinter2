@@ -19,6 +19,12 @@
           <a class="nav-item" href="/ui/admin/geo/premises/">Premises</a>
         </div>
       </div>
+      <div class="nav-container">
+        <div class="nav-header">Company</div>
+        <div class="nav-dropdown">
+          <a class="nav-item" href="/ui/admin/lecs/">LEC</a>
+        </div>
+      </div>
     </nav>
   </div>
   <div class="flex-item">

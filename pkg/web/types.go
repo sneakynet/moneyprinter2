@@ -35,4 +35,8 @@ type DB interface {
 	PremiseSave(*types.Premise) (uint, error)
 	PremiseList(*types.Premise) ([]types.Premise, error)
 	PremiseDelete(*types.Premise) error
+
+	LECSave(*types.LEC) (uint, error)
+	LECList(*types.LEC) ([]types.LEC, error)
+	LECDelete(*types.LEC) error
 }

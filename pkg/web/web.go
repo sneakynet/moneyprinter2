@@ -72,9 +72,19 @@ func New(opts ...Option) (*Server, error) {
 				r.Post("/new", s.uiViewPremisesSubmitSingle)
 
 				r.Get("/bulk", s.uiViewPremisesFormBulk)
-				r.Post("/bulk", s.uiViewPremisesSubmitBulk)
 
+				r.Post("/bulk", s.uiViewPremisesSubmitBulk)
 			})
+		})
+		a.Route("/lecs", func(r chi.Router) {
+			r.Get("/", s.uiViewLECList)
+			r.Get("/{id}", s.uiViewLECDetail)
+
+			r.Get("/{id}/edit", s.uiViewLECEdit)
+			r.Post("/{id}/edit", s.uiViewLECUpsert)
+
+			r.Get("/new", s.uiViewLECFormSingle)
+			r.Post("/new", s.uiViewLECUpsert)
 		})
 	})
 
