@@ -28,6 +28,7 @@ func (db *DB) Migrate() error {
 		&types.Account{},
 		&types.LEC{},
 		&types.Premise{},
+		&types.Switch{},
 		&types.Wirecenter{},
 	}
 

@@ -86,6 +86,19 @@ func New(opts ...Option) (*Server, error) {
 			r.Get("/new", s.uiViewLECFormSingle)
 			r.Post("/new", s.uiViewLECUpsert)
 		})
+
+		a.Route("/switches", func(r chi.Router) {
+			r.Get("/", s.uiViewSwitchList)
+			r.Get("/{id}", s.uiViewSwitchDetail)
+
+			r.Get("/{id}/edit", s.uiViewSwitchEdit)
+			r.Post("/{id}/edit", s.uiViewSwitchUpsert)
+
+			r.Get("/new", s.uiViewSwitchFormSingle)
+			r.Post("/new", s.uiViewSwitchUpsert)
+
+			r.Post("/{id}/delete", s.uiViewSwitchDelete)
+		})
 	})
 
 	return s, nil

@@ -25,6 +25,12 @@
           <a class="nav-item" href="/ui/admin/lecs/">LEC</a>
         </div>
       </div>
+      <div class="nav-container">
+        <div class="nav-header">Telephony</div>
+        <div class="nav-dropdown">
+          <a class="nav-item" href="/ui/admin/switches/">Switches</a>
+        </div>
+      </div>
     </nav>
   </div>
   <div class="flex-item">

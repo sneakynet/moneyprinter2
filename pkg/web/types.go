@@ -39,4 +39,8 @@ type DB interface {
 	LECSave(*types.LEC) (uint, error)
 	LECList(*types.LEC) ([]types.LEC, error)
 	LECDelete(*types.LEC) error
+
+	SwitchSave(*types.Switch) (uint, error)
+	SwitchList(*types.Switch) ([]types.Switch, error)
+	SwitchDelete(*types.Switch) error
 }
