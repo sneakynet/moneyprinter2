@@ -18,3 +18,30 @@ type Switch struct {
 	LECID uint
 	LEC   LEC
 }
+
+// Equipment is the part of a switch that exists in a wirecenter.  It
+// has ports
+type Equipment struct {
+	gorm.Model
+
+	ID           uint
+	SwitchID     uint
+	Switch       Switch
+	WirecenterID uint
+	Wirecenter   Wirecenter
+	Type         string
+	Ports        []Port
+}
+
+// Port represents a single indivisible interface on an Equipment.
+type Port struct {
+	gorm.Model
+
+	ID uint
+
+	// Number is the port number on the equipment.
+	Number      string
+	Personality string
+	EquipmentID uint
+	Equipment   Equipment
+}

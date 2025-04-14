@@ -98,6 +98,34 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/new", s.uiViewSwitchUpsert)
 
 			r.Post("/{id}/delete", s.uiViewSwitchDelete)
+
+			r.Route("/{id}/equipment", func(r chi.Router) {
+				r.Get("/", s.uiViewEquipmentList)
+				r.Get("/{eid}", s.uiViewEquipmentDetail)
+
+				r.Get("/{eid}/edit", s.uiViewEquipmentEdit)
+				r.Post("/{eid}/edit", s.uiViewEquipmentUpsert)
+
+				r.Get("/new", s.uiViewEquipmentFormSingle)
+				r.Post("/new", s.uiViewEquipmentUpsert)
+
+				r.Post("/{eid}/delete", s.uiViewEquipmentDelete)
+
+				r.Route("/{eid}/ports", func(r chi.Router) {
+					r.Get("/", s.uiViewPortList)
+
+					r.Get("/{pid}/edit", s.uiViewPortEdit)
+					r.Post("/{pid}/edit", s.uiViewPortUpsert)
+
+					r.Get("/new", s.uiViewPortFormSingle)
+					r.Post("/new", s.uiViewPortUpsert)
+
+					r.Get("/bulk", s.uiViewPortFormBulk)
+					r.Post("/bulk", s.uiViewPortFormBulkSubmit)
+
+					r.Post("/{pid}/delete", s.uiViewPortDelete)
+				})
+			})
 		})
 	})
 

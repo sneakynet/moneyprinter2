@@ -43,4 +43,12 @@ type DB interface {
 	SwitchSave(*types.Switch) (uint, error)
 	SwitchList(*types.Switch) ([]types.Switch, error)
 	SwitchDelete(*types.Switch) error
+
+	EquipmentSave(*types.Equipment) (uint, error)
+	EquipmentList(*types.Equipment) ([]types.Equipment, error)
+	EquipmentDelete(*types.Equipment) error
+
+	PortSave(*types.Port) (uint, error)
+	PortList(*types.Port) ([]types.Port, error)
+	PortDelete(*types.Port) error
 }
