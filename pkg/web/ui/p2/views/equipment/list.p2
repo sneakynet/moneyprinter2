@@ -7,7 +7,9 @@
     <div class="flex-item flex-max foreground box">
       <div class="flex-container flex-center flex-row">
         {% if switches|length == 1 %}
-          <a class="flex-item button" href="/ui/admin/switches/{{ switches[0] }}/equipment/new">Add Single</a>
+        {% with switch=switches[0] %}
+          <a class="flex-item button" href="/ui/admin/switches/{{ switch.ID }}/equipment/new">Add Single</a>
+        {% endwith %}
         {% endif %}
       </div>
       <hr />
