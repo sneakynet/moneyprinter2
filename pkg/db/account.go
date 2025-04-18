@@ -1,6 +1,8 @@
 package db
 
 import (
+	"gorm.io/gorm/clause"
+
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
 
@@ -21,6 +23,6 @@ func (db *DB) AccountList(filter *types.Account) ([]types.Account, error) {
 // AccountGet returns a single account identified by its specific ID
 func (db *DB) AccountGet(filter *types.Account) (types.Account, error) {
 	acct := types.Account{}
-	res := db.d.Where(filter).First(&acct)
+	res := db.d.Where(filter).Preload("Premises.Wirecenter").Preload(clause.Associations).First(&acct)
 	return acct, res.Error
 }

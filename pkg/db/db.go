@@ -28,6 +28,8 @@ func (db *DB) Migrate() error {
 		&types.Account{},
 		&types.Equipment{},
 		&types.LEC{},
+		&types.NIDPort{},
+		&types.NID{},
 		&types.Port{},
 		&types.Premise{},
 		&types.Switch{},

@@ -51,4 +51,8 @@ type DB interface {
 	PortSave(*types.Port) (uint, error)
 	PortList(*types.Port) ([]types.Port, error)
 	PortDelete(*types.Port) error
+
+	NIDSave(*types.NID) (uint, error)
+	NIDList(*types.NID) ([]types.NID, error)
+	NIDDelete(*types.NID) error
 }

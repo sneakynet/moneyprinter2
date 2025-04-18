@@ -17,8 +17,74 @@
           <td>{{ account.Alias }}</td>
           <td>{{ account.Contact }}</td>
         </tr>
-        </table>
-      </form>
+      </table>
+      <br />
+      <hr />
+      <br />
+
+      <p>Premises</p>
+      <div class="flex-container flex-row flex-center">
+        <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/manage-premises">Assign</a>
+      </div>
+      <table>
+        <tr>
+          <th>Wirecenter</th>
+          <th>Address</th>
+          <th>Remove</th>
+        </tr>
+        {% for premise in account.Premises %}
+          <tr>
+            <td>{{ premise.Wirecenter.Name }}</td>
+            <td>{{ premise.Address }}</td>
+            <td class="flex-container flex-row">
+              <form method="post" action="/ui/admin/accounts/{{account.ID }}/unassign-premise">
+                <input type="number" name="premise_id" value="{{ premise.ID }}" hidden />
+                <input class="flex-item button" type="submit" value="Remove" />
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="2" class="center">No Premises Associated</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+      <br />
+
+      <p>Equipment</p>
+      <div class="flex-container flex-row flex-center">
+        <a class="flex-item button" href="/ui/admin/nid/provision?account={{ account.ID }}">Provision NID</a>
+      </div>
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>Wirecenter</th>
+          <th>Premise</th>
+          <th>CLLI</th>
+          <th>Active Ports</th>
+          <th>Actions</th>
+        </tr>
+        {% for nid in nids %}
+          <tr>
+            <td>{{ nid.Type }}</td>
+            <td>{{ nid.Premise.Wirecenter.Name }}</td>
+            <td>{{ nid.Premise.Address }}</td>
+            <td>{{ nid.CLLI }}</td>
+            <td>{{ nid.Ports|length }}</td>
+            <td class="flex-container flex-row">
+              <form method="post" action="/ui/admin/nid/{{ nid.ID }}/deprovision?account={{ account.ID }}">
+                <input class="flex-item button" type="submit" value="Deprovision" />
+              </form>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="center">No Equipment Provisioned</td>
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </div>
 {% endblock %}

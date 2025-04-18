@@ -103,7 +103,6 @@ func (s *Server) uiViewPremisesSubmitSingle(w http.ResponseWriter, r *http.Reque
 
 	_, err := s.d.PremiseSave(&types.Premise{
 		Address:      pAddress,
-		Alias:        pAlias,
 		WirecenterID: pWirecenterID,
 	})
 	if err != nil {
@@ -149,7 +148,6 @@ func (s *Server) uiViewPremisesSubmitBulk(w http.ResponseWriter, r *http.Request
 			slog.Info("Premise did not exist, creating", "address", record["Address"], "alias", record["Alias"], "wirecenter", wc[record["Wirecenter"]])
 			_, err = s.d.PremiseSave(&types.Premise{
 				Address:      record["Address"],
-				Alias:        record["Alias"],
 				WirecenterID: wc[record["Wirecenter"]],
 			})
 			if err != nil {

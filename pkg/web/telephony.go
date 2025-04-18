@@ -216,7 +216,7 @@ func (s *Server) uiViewPortList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ports, err := s.d.PortList(&types.Port{EquipmentID: equipment[0].SwitchID})
+	ports, err := s.d.PortList(&types.Port{EquipmentID: equipment[0].ID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return

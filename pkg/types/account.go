@@ -12,4 +12,6 @@ type Account struct {
 	Name    string
 	Alias   string
 	Contact string
+
+	Premises []Premise
 }

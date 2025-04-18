@@ -1,0 +1,37 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Provision NID | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item foreground box">
+      <form method="post">
+        <table>
+          <tr>
+            <td><label for="nid_premise">Premise:</label></td>
+            <td>
+              <select name="nid_premise">
+                {% for premise in premises %}
+                  <option value="{{ premise.ID }}">{{ premise.Address }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="nid_type">Type:</label></td>
+            <td>
+              <select name="nid_type">
+                {% for label, type in types %}
+                  <option value="{{ type }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr class="center">
+            <td colspan="2"><input type="submit" value="Submit" /></td>
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+{% endblock %}

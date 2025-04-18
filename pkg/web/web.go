@@ -50,6 +50,10 @@ func New(opts ...Option) (*Server, error) {
 
 			r.Post("/new", s.uiAccountFormSubmitSingle)
 			r.Post("/bulk", s.uiAccountFormSubmitBulk)
+
+			r.Get("/{id}/manage-premises", s.uiViewAccountPremiseForm)
+			r.Post("/{id}/manage-premises", s.uiViewAccountPremiseSubmit)
+			r.Post("/{id}/unassign-premise", s.uiViewAccountPremiseUnassign)
 		})
 		a.Route("/geo", func(b chi.Router) {
 			b.Route("/wirecenters", func(r chi.Router) {
@@ -126,6 +130,13 @@ func New(opts ...Option) (*Server, error) {
 					r.Post("/{pid}/delete", s.uiViewPortDelete)
 				})
 			})
+		})
+
+		a.Route("/nid", func(r chi.Router) {
+			r.Get("/provision", s.uiViewNIDProvisionForm)
+			r.Post("/provision", s.uiViewNIDProvision)
+
+			r.Post("/{id}/deprovision", s.uiViewNIDDeprovision)
 		})
 	})
 

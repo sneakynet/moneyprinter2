@@ -9,8 +9,9 @@ import (
 type Wirecenter struct {
 	gorm.Model
 
-	ID   uint
-	Name string
+	ID       uint
+	Name     string
+	Premises []Premise
 }
 
 // A Premise is a physical location within a Wirecenter.  It contains
@@ -19,8 +20,9 @@ type Premise struct {
 	gorm.Model
 
 	ID           uint
+	AccountID    uint
+	Account      Account
 	Address      string
-	Alias        string
 	Wirecenter   Wirecenter
 	WirecenterID uint
 }
