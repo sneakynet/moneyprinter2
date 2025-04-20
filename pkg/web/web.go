@@ -91,6 +91,16 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/new", s.uiViewLECUpsert)
 		})
 
+		a.Route("/services", func(r chi.Router) {
+			r.Get("/", s.uiViewLECServiceList)
+
+			r.Get("/new", s.uiViewLECServiceFormSingle)
+			r.Post("/new", s.uiViewLECServiceUpsert)
+
+			r.Get("/{id}/edit", s.uiViewLECServiceEdit)
+			r.Post("/{id}/edit", s.uiViewLECServiceUpsert)
+		})
+
 		a.Route("/switches", func(r chi.Router) {
 			r.Get("/", s.uiViewSwitchList)
 			r.Get("/{id}", s.uiViewSwitchDetail)

@@ -23,6 +23,7 @@
         <div class="nav-header">Company</div>
         <div class="nav-dropdown">
           <a class="nav-item" href="/ui/admin/lecs/">LEC</a>
+          <a class="nav-item" href="/ui/admin/services/">Services</a>
         </div>
       </div>
       <div class="nav-container">

@@ -14,4 +14,18 @@ type LEC struct {
 	Byline  string
 	Contact string
 	Website string
+
+	Services []LECService
+}
+
+// LECService defines a service that is provided by a LEC.
+type LECService struct {
+	gorm.Model
+
+	ID          uint
+	Name        string
+	Slug        string
+	Description string
+	LECID       uint
+	LEC         LEC
 }

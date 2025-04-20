@@ -40,6 +40,10 @@ type DB interface {
 	LECList(*types.LEC) ([]types.LEC, error)
 	LECDelete(*types.LEC) error
 
+	LECServiceSave(*types.LECService) (uint, error)
+	LECServiceList(*types.LECService) ([]types.LECService, error)
+	LECServiceDelete(*types.LECService) error
+
 	SwitchSave(*types.Switch) (uint, error)
 	SwitchList(*types.Switch) ([]types.Switch, error)
 	SwitchDelete(*types.Switch) error
