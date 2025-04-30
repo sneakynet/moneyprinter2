@@ -49,10 +49,11 @@
           </tr>
         {% endfor %}
       </table>
+
+      {% if account.Premises|length > 0 %}
       <br />
       <hr />
       <br />
-
       <p>Equipment</p>
       <div class="flex-container flex-row flex-center">
         <a class="flex-item button" href="/ui/admin/nid/provision?account={{ account.ID }}">Provision NID</a>
@@ -87,4 +88,5 @@
       </table>
     </div>
   </div>
+  {% endif %}
 {% endblock %}
