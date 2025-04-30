@@ -45,3 +45,12 @@ type Port struct {
 	EquipmentID uint
 	Equipment   Equipment
 }
+
+// DN is a single Directory Number
+type DN struct {
+	gorm.Model
+
+	ID     uint
+	Number string
+	CNAM   string
+}

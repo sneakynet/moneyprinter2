@@ -52,6 +52,10 @@ type DB interface {
 	EquipmentList(*types.Equipment) ([]types.Equipment, error)
 	EquipmentDelete(*types.Equipment) error
 
+	DNSave(*types.DN) (uint, error)
+	DNList(*types.DN) ([]types.DN, error)
+	DNDelete(*types.DN) error
+
 	PortSave(*types.Port) (uint, error)
 	PortList(*types.Port) ([]types.Port, error)
 	PortDelete(*types.Port) error

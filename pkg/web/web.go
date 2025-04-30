@@ -142,6 +142,21 @@ func New(opts ...Option) (*Server, error) {
 			})
 		})
 
+		a.Route("/dn", func(r chi.Router) {
+			r.Get("/", s.uiViewDNList)
+
+			r.Get("/{id}/edit", s.uiViewDNEdit)
+			r.Post("/{id}/edit", s.uiViewDNUpsert)
+
+			r.Get("/new", s.uiViewDNFormSingle)
+			r.Post("/new", s.uiViewDNUpsert)
+
+			r.Get("/bulk", s.uiViewDNFormBulk)
+			r.Post("/bulk", s.uiViewDNFormBulkSubmit)
+
+			r.Post("/{id}/delete", s.uiViewDNDelete)
+		})
+
 		a.Route("/nid", func(r chi.Router) {
 			r.Get("/provision", s.uiViewNIDProvisionForm)
 			r.Post("/provision", s.uiViewNIDProvision)

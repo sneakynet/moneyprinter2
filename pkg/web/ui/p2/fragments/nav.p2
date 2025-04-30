@@ -30,6 +30,7 @@
         <div class="nav-header">Telephony</div>
         <div class="nav-dropdown">
           <a class="nav-item" href="/ui/admin/switches/">Switches</a>
+          <a class="nav-item" href="/ui/admin/dn/">DN</a>
         </div>
       </div>
     </nav>

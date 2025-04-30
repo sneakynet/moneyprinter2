@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
@@ -315,4 +316,78 @@ func (s *Server) uiViewPortDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/ui/admin/switches/%s/equipment/%s/ports/", chi.URLParam(r, "id"), chi.URLParam(r, "eid")), http.StatusSeeOther)
+}
+
+////////
+// DN //
+////////
+
+func (s *Server) uiViewDNList(w http.ResponseWriter, r *http.Request) {
+	dnList, err := s.d.DNList(nil)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	s.doTemplate(w, r, "views/dn/list.p2", pongo2.Context{"DNs": dnList})
+}
+
+func (s *Server) uiViewDNEdit(w http.ResponseWriter, r *http.Request) {
+	dnList, err := s.d.DNList(&types.DN{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	s.doTemplate(w, r, "views/dn/form_single.p2", pongo2.Context{"dn": dnList[0]})
+}
+
+func (s *Server) uiViewDNUpsert(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	dn := types.DN{
+		ID:     s.strToUint(chi.URLParam(r, "id")),
+		Number: r.FormValue("dn_number"),
+		CNAM:   r.FormValue("dn_cnam"),
+	}
+
+	if _, err := s.d.DNSave(&dn); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	http.Redirect(w, r, "/ui/admin/dn/", http.StatusSeeOther)
+}
+
+func (s *Server) uiViewDNFormSingle(w http.ResponseWriter, r *http.Request) {
+	s.doTemplate(w, r, "views/dn/form_single.p2", nil)
+}
+
+func (s *Server) uiViewDNFormBulk(w http.ResponseWriter, r *http.Request) {
+	s.doTemplate(w, r, "views/dn/form_bulk.p2", nil)
+}
+
+func (s *Server) uiViewDNFormBulkSubmit(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	base := s.strToUint(r.FormValue("dn_base"))
+	for i := range s.strToUint(r.FormValue("dn_count")) {
+		if _, err := s.d.DNSave(&types.DN{Number: strconv.Itoa(int(base + i))}); err != nil {
+			s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+			return
+		}
+	}
+
+	http.Redirect(w, r, "/ui/admin/dn/", http.StatusSeeOther)
+}
+
+func (s *Server) uiViewDNDelete(w http.ResponseWriter, r *http.Request) {
+	if err := s.d.DNDelete(&types.DN{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	http.Redirect(w, r, "/ui/admin/dn/", http.StatusSeeOther)
 }

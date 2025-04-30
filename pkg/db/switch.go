@@ -59,3 +59,21 @@ func (db *DB) PortList(filter *types.Port) ([]types.Port, error) {
 func (db *DB) PortDelete(p *types.Port) error {
 	return db.d.Delete(p).Error
 }
+
+// DNSave saves a DN to the database
+func (db *DB) DNSave(dn *types.DN) (uint, error) {
+	res := db.d.Save(dn)
+	return dn.ID, res.Error
+}
+
+// DNList returns DNs matching the given filter.
+func (db *DB) DNList(filter *types.DN) ([]types.DN, error) {
+	DNList := []types.DN{}
+	res := db.d.Where(filter).Find(&DNList)
+	return DNList, res.Error
+}
+
+// DNDelete removes a DN, use with care!
+func (db *DB) DNDelete(dn *types.DN) error {
+	return db.d.Delete(dn).Error
+}

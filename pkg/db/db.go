@@ -26,6 +26,7 @@ func (db *DB) Connect(file string) error {
 func (db *DB) Migrate() error {
 	tables := []interface{}{
 		&types.Account{},
+		&types.DN{},
 		&types.Equipment{},
 		&types.LEC{},
 		&types.LECService{},
