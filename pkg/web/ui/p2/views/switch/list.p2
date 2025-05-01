@@ -23,9 +23,9 @@
               <td>{{ switch.CLLI }}</td>
               <td>{{ switch.Alias }}</td>
               <td class="flex-container flex-row">
-                <form class="flex-item" action="/ui/admin/switches/{{ switch.ID }}/edit"><input type="submit" value="Edit" /></form>
-                <form class="flex-item" action="/ui/admin/switches/{{ switch.ID }}/delete" method="post"><input type="submit" value="Delete" /></form>
                 <a class="flex-item button" href="/ui/admin/switches/{{ switch.ID }}/equipment">Equipment</a>
+                <form action="/ui/admin/switches/{{ switch.ID }}/edit"><input class="flex-item button" type="submit" value="Edit" /></form>
+                <form action="/ui/admin/switches/{{ switch.ID }}/delete" method="post"><input class="flex-item button" type="submit" value="Delete" /></form>
               </td>
             </tr>
           {% endfor %}

@@ -24,7 +24,7 @@
               <td>{{ premise.Address }}</td>
               <td>{{ premise.Alias }}</td>
               <td class="flex-container flex-row">
-                <form class="flex-item" action="/ui/admin/geo/premises/{{ premise.ID }}/delete" method="post"><input type="submit" value="Delete" /></form>
+                <form action="/ui/admin/geo/premises/{{ premise.ID }}/delete" method="post"><input class="flex-item button" type="submit" value="Delete" /></form>
               </td>
             </tr>
           {% endfor %}

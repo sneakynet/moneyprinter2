@@ -25,7 +25,7 @@
               <td>{{ lec.Contact }}</td>
               <td>{{ lec.Website }}</td>
               <td class="flex-container flex-row">
-                <form class="flex-item" action="/ui/admin/lecs/{{ lec.ID }}/edit"><input type="submit" value="Edit" /></form>
+                <form action="/ui/admin/lecs/{{ lec.ID }}/edit"><input class="flex-item button" type="submit" value="Edit" /></form>
               </td>
             </tr>
           {% endfor %}

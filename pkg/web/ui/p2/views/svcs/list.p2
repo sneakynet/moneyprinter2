@@ -25,7 +25,7 @@
               <td>{{ svc.Description }}</td>
               <td>{{ svc.LEC.Name }}</td>
               <td class="flex-container flex-row">
-                <form class="flex-item" action="/ui/admin/services/{{ svc.ID }}/edit"><input type="submit" value="Edit" /></form>
+                <form action="/ui/admin/services/{{ svc.ID }}/edit"><input class="flex-item button" type="submit" value="Edit" /></form>
               </td>
             </tr>
           {% endfor %}

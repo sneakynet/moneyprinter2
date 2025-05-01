@@ -29,10 +29,10 @@
               <td>{{ eq.Type }}</td>
               <td>{{ eq.Ports|length }}</td>
               <td class="flex-container flex-row">
-                <form class="flex-item" action="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}/edit"><input type="submit" value="Edit" /></form>
-                <form class="flex-item" action="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}/delete" method="post"><input type="submit" value="Delete" /></form>
                 <a class="flex-item button" href="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}">Detail</a>
                 <a class="flex-item button" href="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}/ports/">Ports</a>
+                <form action="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}/edit"><input class="flex-item button" type="submit" value="Edit" /></form>
+                <form action="/ui/admin/switches/{{ eq.Switch.ID }}/equipment/{{ eq.ID }}/delete" method="post"><input class="flex-item button" type="submit" value="Delete" /></form>
               </td>
             </tr>
           {% endfor %}
