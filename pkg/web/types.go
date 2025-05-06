@@ -63,4 +63,9 @@ type DB interface {
 	NIDSave(*types.NID) (uint, error)
 	NIDList(*types.NID) ([]types.NID, error)
 	NIDDelete(*types.NID) error
+
+	ServiceSave(*types.Service) (uint, error)
+	ServiceList(*types.Service) ([]types.Service, error)
+	ServiceDelete(*types.Service) error
+	ServiceAssociateDN(*types.Service, []types.DN) error
 }

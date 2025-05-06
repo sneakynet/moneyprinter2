@@ -179,3 +179,99 @@ func (s *Server) uiViewAccountPremiseUnassign(w http.ResponseWriter, r *http.Req
 	}
 	http.Redirect(w, r, fmt.Sprintf("/ui/admin/accounts/%s", chi.URLParam(r, "id")), http.StatusSeeOther)
 }
+
+func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request) {
+	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	lecSvcs, err := s.d.LECServiceList(nil)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	lecServices := []struct {
+		LEC      string
+		Services []types.LECService
+	}{}
+	tmp := make(map[string][]types.LECService)
+	for _, svc := range lecSvcs {
+		tmp[svc.LEC.Name] = append(tmp[svc.LEC.Name], svc)
+	}
+	for lec, svc := range tmp {
+		lecServices = append(lecServices, struct {
+			LEC      string
+			Services []types.LECService
+		}{lec, svc})
+	}
+
+	dns, err := s.d.DNList(nil)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	ctx := pongo2.Context{
+		"Account":     account,
+		"LECServices": lecServices,
+		"DNs":         dns,
+	}
+
+	svcs, err := s.d.ServiceList(&types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))})
+	if err != nil {
+		slog.Debug("Could not retrieve service order", "error", err)
+	}
+	assignedDN := []uint{}
+	if len(svcs) == 1 {
+		for _, dn := range svcs[0].AssignedDN {
+			assignedDN = append(assignedDN, dn.ID)
+		}
+		ctx["Order"] = svcs[0]
+	}
+	ctx["AssignedDN"] = assignedDN
+
+	slog.Debug("Template Context", "ctx", assignedDN)
+
+	s.doTemplate(w, r, "views/account/order_service.p2", ctx)
+}
+
+func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	svc := types.Service{
+		ID:           s.strToUint(r.FormValue("service_id")),
+		LECServiceID: s.strToUint(r.FormValue("lec_service_id")),
+		AccountID:    s.strToUint(chi.URLParam(r, "id")),
+	}
+
+	if _, err := s.d.ServiceSave(&svc); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	dns := []types.DN{}
+	for _, dnID := range r.Form["assigned_dn"] {
+		dns = append(dns, types.DN{ID: s.strToUint(dnID)})
+	}
+	if err := s.d.ServiceAssociateDN(&svc, dns); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/ui/admin/accounts/%s", chi.URLParam(r, "id")), http.StatusSeeOther)
+}
+
+func (s *Server) uiViewAccountServiceCancel(w http.ResponseWriter, r *http.Request) {
+	if err := s.d.ServiceDelete(&types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))}); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/ui/admin/accounts/%s", chi.URLParam(r, "id")), http.StatusSeeOther)
+}

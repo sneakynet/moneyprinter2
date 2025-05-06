@@ -14,4 +14,5 @@ type Account struct {
 	Contact string
 
 	Premises []Premise
+	Services []Service
 }

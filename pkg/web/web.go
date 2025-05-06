@@ -54,6 +54,12 @@ func New(opts ...Option) (*Server, error) {
 			r.Get("/{id}/manage-premises", s.uiViewAccountPremiseForm)
 			r.Post("/{id}/manage-premises", s.uiViewAccountPremiseSubmit)
 			r.Post("/{id}/unassign-premise", s.uiViewAccountPremiseUnassign)
+
+			r.Get("/{id}/order-service", s.uiViewAccountServiceForm)
+			r.Get("/{id}/order-service/{sid}", s.uiViewAccountServiceForm)
+			r.Post("/{id}/order-service", s.uiViewAccountServiceUpsert)
+			r.Post("/{id}/order-service/{sid}", s.uiViewAccountServiceUpsert)
+			r.Post("/{id}/cancel-service/{sid}", s.uiViewAccountServiceCancel)
 		})
 		a.Route("/geo", func(b chi.Router) {
 			b.Route("/wirecenters", func(r chi.Router) {

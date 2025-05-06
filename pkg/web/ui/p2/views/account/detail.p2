@@ -22,6 +22,41 @@
       <hr />
       <br />
 
+      <p>Services</p>
+      <div class="flex-container flex-row flex-center">
+        <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/order-service">Order Service</a>
+      </div>
+      <table>
+        <tr>
+          <th>Service</th>
+          <th>Provided By</th>
+          <th>DNs</th>
+          <th>Actions</th>
+        </tr>
+        {% for service in account.Services %}
+          <tr>
+            <td>{{ service.LECService.Name }}</td>
+            <td>{{ service.LECService.LEC.Name }}</td>
+            <td>{% for dn in service.AssignedDN %}{{ dn.Number}} {%endfor %}</td>
+            <td>
+              <div class="flex-container flex-row flex-center">
+                <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/order-service/{{ service.ID }}">Edit</a>
+                <form method="post" action="/ui/admin/accounts/{{ account.ID }}/cancel-service/{{ service.ID }}">
+                  <input type="submit" value="Cancel" class="flex-item button" />
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No Services</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+      <br />
+
       <p>Premises</p>
       <div class="flex-container flex-row flex-center">
         <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/manage-premises">Assign</a>

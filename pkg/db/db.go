@@ -34,6 +34,7 @@ func (db *DB) Migrate() error {
 		&types.NID{},
 		&types.Port{},
 		&types.Premise{},
+		&types.Service{},
 		&types.Switch{},
 		&types.Wirecenter{},
 	}
