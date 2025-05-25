@@ -1,0 +1,68 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Provision NID Port | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item foreground box">
+      <form method="post">
+        <h2>NID Port</h2>
+
+        <table>
+          <tr>
+            <td>NID</td>
+            <td>{{ nid.CLLI }}</td>
+          </tr>
+          <tr>
+            <td>NID Type</td>
+            <td>{{ nid.Type }}</td>
+          </tr>
+          <tr>
+            <td>Ports Used</td>
+            <td>{{ nid.Ports|length }}/{{ nid.MaxPorts() }}</td>
+          </tr>
+        </table>
+        <hr />
+        <table>
+          <tr>
+            <td><label for="nid_services">Services:</label></td>
+            <td>
+              <select name="nid_services" multiple>
+                {% for service in account.Services %}
+                  <option value="{{ service.ID }}" {% if service.ID in AssignedSvc %}selected{% endif %}>{{ service.LECService.Name }} ({{ service.DNList }})</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="nid_port_id">NID Port:</label></td>
+            <td>
+              <select name="nid_port_id">
+                {% for port in nid.Ports %}
+                  <option value="{{ port.ID }}">Port {{ forloop.Counter }}</option>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="equipment_port_id">Equipment Port:</label></td>
+            <td>
+              <select name="equipment_port_id">
+                {% for eq in equipment %}
+                  <optgroup label="{{ eq.Type }}">
+                    {% for port in eq.Ports %}
+                      <option value="{{ port.ID }}">{{ port.Number }} ({{ port.Personality }})</option>
+                    {% endfor %}
+                  </optgroup>
+                {% endfor %}
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2"><input type="submit" value="Save" />
+          </tr>
+        </table>
+      </form>
+    </div>
+  </div>
+{% endblock %}

@@ -168,6 +168,11 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/provision", s.uiViewNIDProvision)
 
 			r.Post("/{id}/deprovision", s.uiViewNIDDeprovision)
+
+			r.Route("/{id}/ports", func(r chi.Router) {
+				r.Get("/provision", s.uiViewNIDPortProvisionForm)
+				r.Post("/provision", s.uiViewNIDPortProvision)
+			})
 		})
 	})
 

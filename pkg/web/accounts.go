@@ -28,7 +28,7 @@ func (s *Server) uiViewAccountDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	NIDs, err := s.d.NIDList(&types.NID{AccountID: account.ID})
+	NIDs, err := s.d.NIDListFull(&types.NID{AccountID: account.ID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return

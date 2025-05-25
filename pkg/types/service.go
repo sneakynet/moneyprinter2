@@ -1,6 +1,8 @@
 package types
 
 import (
+	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -15,4 +17,13 @@ type Service struct {
 	Account      Account
 
 	AssignedDN []DN `gorm:"many2many:dn_assignments;"`
+}
+
+// DNList provides a cleaner text list of the assigned DNs
+func (s Service) DNList() string {
+	dns := []string{}
+	for _, dn := range s.AssignedDN {
+		dns = append(dns, dn.Number)
+	}
+	return strings.Join(dns, ",")
 }

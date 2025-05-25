@@ -1,6 +1,8 @@
 package types
 
 import (
+	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -55,17 +57,50 @@ func (n NID) MaxPorts() uint8 {
 	}
 }
 
+// AfterCreate sets up the NIDPorts on creation of the NID.
+func (n NID) AfterCreate(tx *gorm.DB) error {
+	for range n.MaxPorts() {
+		tx.Save(&NIDPort{})
+	}
+	return nil
+}
+
 // NIDPort provides an elastic element to bind services to physical
 // ports on a NID.
 type NIDPort struct {
 	gorm.Model
 
-	NIDID  uint
-	Number uint8
+	ID              uint
+	NIDID           uint
+	EquipmentPortID uint
+	EquipmentPort   Port
+
+	Services []Service `gorm:"many2many:service_appearances;"`
 }
 
 // TableName satisfies the Tabler interface to have a nicer table
 // name.
 func (n NIDPort) TableName() string {
 	return "nid_ports"
+}
+
+// ServiceList returns the names of all services assigned to the port.
+func (n NIDPort) ServiceList() string {
+	svcs := []string{}
+	for _, svc := range n.Services {
+		svcs = append(svcs, svc.LECService.Name)
+	}
+	return strings.Join(svcs, ",")
+}
+
+// AllDNs returns a comma separated list of DNs that can reach this
+// port.
+func (n NIDPort) AllDNs() string {
+	dns := []string{}
+	for _, svc := range n.Services {
+		for _, dn := range svc.AssignedDN {
+			dns = append(dns, dn.Number)
+		}
+	}
+	return strings.Join(dns, ",")
 }

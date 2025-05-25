@@ -37,7 +37,7 @@
           <tr>
             <td>{{ service.LECService.Name }}</td>
             <td>{{ service.LECService.LEC.Name }}</td>
-            <td>{% for dn in service.AssignedDN %}{{ dn.Number}} {%endfor %}</td>
+            <td>{{ service.DNList }}</td>
             <td>
               <div class="flex-container flex-row flex-center">
                 <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/order-service/{{ service.ID }}">Edit</a>
@@ -78,7 +78,7 @@
               </form>
             </td>
           </tr>
-        {% empty %}
+          {% empty %}
           <tr>
             <td colspan="2" class="center">No Premises Associated</td>
           </tr>
@@ -86,9 +86,9 @@
       </table>
 
       {% if account.Premises|length > 0 %}
-      <br />
-      <hr />
-      <br />
+        <br />
+        <hr />
+        <br />
       <p>Equipment</p>
       <div class="flex-container flex-row flex-center">
         <a class="flex-item button" href="/ui/admin/nid/provision?account={{ account.ID }}">Provision NID</a>
@@ -99,7 +99,7 @@
           <th>Wirecenter</th>
           <th>Premise</th>
           <th>CLLI</th>
-          <th>Active Ports</th>
+          <th>Ports</th>
           <th>Actions</th>
         </tr>
         {% for nid in nids %}
@@ -110,18 +110,39 @@
             <td>{{ nid.CLLI }}</td>
             <td>{{ nid.Ports|length }}</td>
             <td class="flex-container flex-row">
+              <a class="flex-item button" href="/ui/admin/nid/{{ nid.ID }}/ports/provision?next=/ui/admin/accounts/{{ account.ID }}">Provision Port</a>
               <form method="post" action="/ui/admin/nid/{{ nid.ID }}/deprovision?account={{ account.ID }}">
                 <input class="flex-item button" type="submit" value="Deprovision" />
               </form>
             </td>
           </tr>
+        <tr>
+          <td colspan="6">
+            <table>
+              <tr>
+                <th>Port</th>
+                <th>Service</th>
+                <th>DN</th>
+                <th>Equipment</th>
+              </tr>
+              {% for port in nid.Ports %}
+                <tr>
+                  <td>{{ forloop.Counter }}</td>
+                  <td>{{ port.ServiceList() }}</td>
+                  <td>{{ port.AllDNs() }}</td>
+                  <td>{{ port.EquipmentPort.Equipment.Switch.CLLI }} - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})</td>
+                </tr>
+              {% endfor %}
+            </table>
+          </td>
+        </tr>
         {% empty %}
-          <tr>
-            <td colspan="6" class="center">No Equipment Provisioned</td>
-          </tr>
-        {% endfor %}
+        <tr>
+          <td colspan="6" class="center">No Equipment Provisioned</td>
+        </tr>
+      {% endfor %}
       </table>
     </div>
   </div>
-  {% endif %}
+{% endif %}
 {% endblock %}
