@@ -22,7 +22,7 @@
             <td>
               <select name="nid_type">
                 {% for label, type in types %}
-                  <option value="{{ type }}">{{ label }}</option>
+                  <option value="{{ type|integer }}">{{ label }}</option>
                 {% endfor %}
               </select>
             </td>

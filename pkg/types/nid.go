@@ -14,12 +14,18 @@ const (
 	// This type of NID has 4 ports, supports pair remaping, and
 	// supports loop-through services.
 	NIDTypeSRI NIDType = iota
+
+	// NIDTypeEthernet provides a single port of Ethernet handoff
+	// via a biscuit-jack style enclosure.
+	NIDTypeEthernet
 )
 
 func (n NIDType) String() string {
 	switch n {
 	case NIDTypeSRI:
 		return "SRI"
+	case NIDTypeEthernet:
+		return "Ethernet"
 	default:
 		return "UNKNOWN"
 	}
@@ -52,6 +58,8 @@ func (n NID) MaxPorts() uint8 {
 	switch n.Type {
 	case NIDTypeSRI:
 		return 4
+	case NIDTypeEthernet:
+		return 1
 	default:
 		return 255
 	}
@@ -60,7 +68,7 @@ func (n NID) MaxPorts() uint8 {
 // AfterCreate sets up the NIDPorts on creation of the NID.
 func (n NID) AfterCreate(tx *gorm.DB) error {
 	for range n.MaxPorts() {
-		tx.Save(&NIDPort{})
+		tx.Save(&NIDPort{NIDID: n.ID})
 	}
 	return nil
 }

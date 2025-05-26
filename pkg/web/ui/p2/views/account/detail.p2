@@ -116,31 +116,33 @@
               </form>
             </td>
           </tr>
-        <tr>
-          <td colspan="6">
-            <table>
-              <tr>
-                <th>Port</th>
-                <th>Service</th>
-                <th>DN</th>
-                <th>Equipment</th>
-              </tr>
-              {% for port in nid.Ports %}
-                <tr>
-                  <td>{{ forloop.Counter }}</td>
-                  <td>{{ port.ServiceList() }}</td>
-                  <td>{{ port.AllDNs() }}</td>
-                  <td>{{ port.EquipmentPort.Equipment.Switch.CLLI }} - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})</td>
-                </tr>
-              {% endfor %}
-            </table>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="6" class="center">No Equipment Provisioned</td>
-        </tr>
-      {% endfor %}
+          {% if nid.Type == "SRI" %}
+            <tr>
+              <td colspan="6">
+                <table>
+                  <tr>
+                    <th>Port</th>
+                    <th>Service</th>
+                    <th>DN</th>
+                    <th>Equipment</th>
+                  </tr>
+                  {% for port in nid.Ports %}
+                    <tr>
+                      <td>{{ forloop.Counter }}</td>
+                      <td>{{ port.ServiceList() }}</td>
+                      <td>{{ port.AllDNs() }}</td>
+                      <td>{{ port.EquipmentPort.Equipment.Switch.CLLI }} - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})</td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              </td>
+            </tr>
+          {% endif %}
+          {% empty %}
+          <tr>
+            <td colspan="6" class="center">No Equipment Provisioned</td>
+          </tr>
+        {% endfor %}
       </table>
     </div>
   </div>

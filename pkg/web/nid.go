@@ -20,7 +20,10 @@ func (s *Server) uiViewNIDProvisionForm(w http.ResponseWriter, r *http.Request) 
 	ctx := pongo2.Context{
 		"accountID": 0,
 		"premises":  premises,
-		"types":     map[string]types.NIDType{"SRI": types.NIDTypeSRI},
+		"types": map[string]types.NIDType{
+			"SRI":      types.NIDTypeSRI,
+			"Ethernet": types.NIDTypeEthernet,
+		},
 	}
 
 	s.doTemplate(w, r, "views/nid/form_single.p2", ctx)
