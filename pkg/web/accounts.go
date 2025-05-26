@@ -220,20 +220,26 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 		"DNs":         dns,
 	}
 
-	svcs, err := s.d.ServiceList(&types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))})
-	if err != nil {
-		slog.Debug("Could not retrieve service order", "error", err)
-	}
-	assignedDN := []uint{}
-	if len(svcs) == 1 {
-		for _, dn := range svcs[0].AssignedDN {
-			assignedDN = append(assignedDN, dn.ID)
+	sid := s.strToUint(chi.URLParam(r, "sid"))
+	if sid != 0 {
+		slog.Debug("Querying for service orders", "sid", sid, "account", account.ID)
+		svcs, err := s.d.ServiceList(&types.Service{
+			ID: sid,
+			AccountID: account.ID,
+		})
+		if err != nil {
+			slog.Debug("Could not retrieve service order", "error", err)
 		}
-		ctx["Order"] = svcs[0]
+		assignedDN := []uint{}
+		if len(svcs) == 1 {
+			for _, dn := range svcs[0].AssignedDN {
+				assignedDN = append(assignedDN, dn.ID)
+			}
+			ctx["Order"] = svcs[0]
+		}
+		ctx["AssignedDN"] = assignedDN
+		slog.Debug("Template Context", "ctx", assignedDN)
 	}
-	ctx["AssignedDN"] = assignedDN
-
-	slog.Debug("Template Context", "ctx", assignedDN)
 
 	s.doTemplate(w, r, "views/account/order_service.p2", ctx)
 }
