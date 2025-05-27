@@ -18,6 +18,8 @@ func New(opts ...Option) (*Server, error) {
 	s.r = chi.NewRouter()
 	s.n = new(http.Server)
 
+	pongo2.RegisterFilter("key", s.filterGetValueByKey)
+
 	var tplRoot fs.FS
 	if tpath := os.Getenv("MONEYD_TEMPLATE_PATH"); tpath != "" {
 		slog.Warn("Loading templates from debug path", "path", tpath)
@@ -173,6 +175,10 @@ func New(opts ...Option) (*Server, error) {
 				r.Get("/provision", s.uiViewNIDPortProvisionForm)
 				r.Post("/provision", s.uiViewNIDPortProvision)
 			})
+		})
+
+		a.Route("/work", func(r chi.Router) {
+			r.Get("/premises", s.uiViewWorkPremises)
 		})
 	})
 

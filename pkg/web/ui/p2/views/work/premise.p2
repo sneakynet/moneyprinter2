@@ -1,0 +1,51 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Workorders by Premise | Moneyprinter{% endblock %}
+
+{% block content %}
+  {% for wo in workorders %}
+    <div class="flex-container flex-row flex-center page">
+      <div class="flex-item flex-max foreground box">
+        <h1>Work Order: {{ wo.Premises.Address }}</h1>
+        <h3>Customer: {{ wo.Account.Alias }}</h3>
+        <hr />
+        <div class="flex-container flex-row">
+          {% for nid in wo.NIDs %}
+            <div class="flex-item box">
+              <table>
+                <tr>
+                  <td>Type</td>
+                  <td>{{ nid.Type }}</td>
+                </tr>
+                <tr>
+                  <td>Identifier</td>
+                  <td>{{ nid.CLLI }}</td>
+                </tr>
+              </table>
+              {% if nid.Ports|length > 1 %}
+                <table>
+                  <tr>
+                    <th>Port</th>
+                    <th>DN</th>
+                    <th>Equipment</th>
+                  </tr>
+                  {% for port in nid.Ports %}
+                    <tr>
+                      <td>{{ forloop.Counter }}</td>
+                      <td>{{ port.AllDNs() }}</td>
+                      <td>
+                        {% if port.AllDNs() != "" %}
+                          <a href="/ui/admin/switches/{{ port.EquipmentPort.Equipment.Switch.ID }}">{{ port.EquipmentPort.Equipment.Switch.CLLI }}</a> - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </table>
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}

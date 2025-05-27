@@ -224,7 +224,7 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 	if sid != 0 {
 		slog.Debug("Querying for service orders", "sid", sid, "account", account.ID)
 		svcs, err := s.d.ServiceList(&types.Service{
-			ID: sid,
+			ID:        sid,
 			AccountID: account.ID,
 		})
 		if err != nil {

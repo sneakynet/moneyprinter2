@@ -116,7 +116,7 @@
               </form>
             </td>
           </tr>
-          {% if nid.Type == "SRI" %}
+          {% if nid.Ports|length > 1 %}
             <tr>
               <td colspan="6">
                 <table>
@@ -131,7 +131,11 @@
                       <td>{{ forloop.Counter }}</td>
                       <td>{{ port.ServiceList() }}</td>
                       <td>{{ port.AllDNs() }}</td>
-                      <td>{{ port.EquipmentPort.Equipment.Switch.CLLI }} - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})</td>
+                      <td>
+                        {% if port.AllDNs() != "" %}
+                          <a href="/ui/admin/switches/{{ port.EquipmentPort.Equipment.Switch.ID }}">{{ port.EquipmentPort.Equipment.Switch.CLLI }}</a> - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})
+                        {% endif %}
+                      </td>
                     </tr>
                   {% endfor %}
                 </table>
