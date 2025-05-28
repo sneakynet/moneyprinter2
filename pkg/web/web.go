@@ -116,6 +116,8 @@ func New(opts ...Option) (*Server, error) {
 			r.Get("/{id}/edit", s.uiViewSwitchEdit)
 			r.Post("/{id}/edit", s.uiViewSwitchUpsert)
 
+			r.Get("/{id}/config", s.uiViewSwitchConfig)
+
 			r.Get("/new", s.uiViewSwitchFormSingle)
 			r.Post("/new", s.uiViewSwitchUpsert)
 

@@ -75,6 +75,8 @@ func (s *Server) uiViewSwitchUpsert(w http.ResponseWriter, r *http.Request) {
 		CLLI:  r.FormValue("switch_clli"),
 		Alias: r.FormValue("switch_alias"),
 		LECID: s.strToUint(r.FormValue("switch_lec")),
+
+		ConfigTemplate: r.FormValue("switch_config"),
 	}
 
 	id, err := s.d.SwitchSave(&sw)
@@ -92,6 +94,35 @@ func (s *Server) uiViewSwitchDelete(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/ui/admin/switches", http.StatusSeeOther)
+}
+
+func (s *Server) uiViewSwitchConfig(w http.ResponseWriter, r *http.Request) {
+	sw, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	nids, err := s.d.NIDListFull(&types.NID{})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	ctx := pongo2.Context{
+		"switch": sw[0],
+		"nids":   nids,
+	}
+
+	tpl, err := pongo2.FromString(sw[0].ConfigTemplate)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	if err := tpl.ExecuteWriter(ctx, w); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
 }
 
 ///////////////

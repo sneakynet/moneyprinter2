@@ -17,6 +17,8 @@ type Switch struct {
 	Alias string
 	LECID uint
 	LEC   LEC
+
+	ConfigTemplate string
 }
 
 // Equipment is the part of a switch that exists in a wirecenter.  It

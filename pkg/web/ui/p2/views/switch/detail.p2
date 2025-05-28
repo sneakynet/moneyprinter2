@@ -4,8 +4,9 @@
 
 {% block content %}
   <div class="flex-container flex-row flex-center">
-    <div class="flex-item flex-max foreground box">
+    <div class="flex-item foreground box">
       <div class="flex-container flex-center">
+        <div class="flex-item">
         <table>
           <tr>
             <th>LEC</th>
@@ -18,6 +19,11 @@
             <td>{{ switch.Alias }}</td>
           </tr>
         </table>
+        <br />
+
+        <h2>Configuration Template</h2>
+        <pre>{{ switch.ConfigTemplate }}</pre>
+        </div>
       </div>
     </div>
   </div>
