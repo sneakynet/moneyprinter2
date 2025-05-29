@@ -1,0 +1,26 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Directory | Moneyprinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center page">
+    <div class="flex-item flex-max foreground box">
+      <table>
+        <tr>
+          <th>Name</th>
+          <th>Alias</th>
+          <th>Number</th>
+          <th>CNAM</th>
+        </tr>
+        {% for entry in directory %}
+          <tr>
+            <td>{{ entry.Account.Name }}</td>
+            <td>{{ entry.Account.Alias }}</td>
+            <td>{{ entry.DN.Number }}</td>
+            <td>{{ entry.DN.CNAM }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

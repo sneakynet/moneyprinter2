@@ -44,3 +44,35 @@ func (s *Server) uiViewWorkPremises(w http.ResponseWriter, r *http.Request) {
 
 	s.doTemplate(w, r, "views/work/premise.p2", ctx)
 }
+
+func (s *Server) uiViewWorkDirectory(w http.ResponseWriter, r *http.Request) {
+	ctx := pongo2.Context{}
+
+	type directoryEntry struct {
+		Account types.Account
+		DN      types.DN
+	}
+	directoryEntries := []directoryEntry{}
+
+	svcs, err := s.d.ServiceList(&types.Service{})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	for _, svc := range svcs {
+		for _, dn := range svc.AssignedDN {
+			directoryEntries = append(directoryEntries, directoryEntry{
+				Account: svc.Account,
+				DN:      dn,
+			})
+		}
+	}
+	sort.Slice(directoryEntries, func(i, j int) bool {
+		return directoryEntries[i].Account.Alias < directoryEntries[j].Account.Alias
+	})
+
+	ctx["directory"] = directoryEntries
+
+	s.doTemplate(w, r, "views/work/directory.p2", ctx)
+}

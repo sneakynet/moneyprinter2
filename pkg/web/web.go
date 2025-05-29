@@ -181,6 +181,7 @@ func New(opts ...Option) (*Server, error) {
 
 		a.Route("/work", func(r chi.Router) {
 			r.Get("/premises", s.uiViewWorkPremises)
+			r.Get("/directory", s.uiViewWorkDirectory)
 		})
 	})
 
