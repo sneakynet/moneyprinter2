@@ -54,6 +54,8 @@ type DB interface {
 
 	DNSave(*types.DN) (uint, error)
 	DNList(*types.DN) ([]types.DN, error)
+	DNListAvailable() ([]types.DN, error)
+	DNListAssigned() ([]types.DN, error)
 	DNDelete(*types.DN) error
 
 	PortSave(*types.Port) (uint, error)

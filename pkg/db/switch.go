@@ -73,6 +73,21 @@ func (db *DB) DNList(filter *types.DN) ([]types.DN, error) {
 	return DNList, res.Error
 }
 
+// DNListAssigned filtes for DNs that are already issued in one or
+// more assignments.
+func (db *DB) DNListAssigned() ([]types.DN, error) {
+	DNList := []types.DN{}
+	res := db.d.Where("id in (?)", db.d.Table("dn_assignments").Select("dn_id")).Find(&DNList)
+	return DNList, res.Error
+}
+
+// DNListAvailable filters for DNs that are not assigned anywhere.
+func (db *DB) DNListAvailable() ([]types.DN, error) {
+	DNList := []types.DN{}
+	res := db.d.Where("id not in (?)", db.d.Table("dn_assignments").Select("dn_id")).Find(&DNList)
+	return DNList, res.Error
+}
+
 // DNDelete removes a DN, use with care!
 func (db *DB) DNDelete(dn *types.DN) error {
 	return db.d.Delete(dn).Error

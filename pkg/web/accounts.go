@@ -208,7 +208,13 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 		}{lec, svc})
 	}
 
-	dns, err := s.d.DNList(nil)
+	availDN, err := s.d.DNListAvailable()
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	usedDN, err := s.d.DNListAssigned()
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -217,7 +223,8 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 	ctx := pongo2.Context{
 		"Account":     account,
 		"LECServices": lecServices,
-		"DNs":         dns,
+		"AvailDN":     availDN,
+		"UsedDN":      usedDN,
 	}
 
 	sid := s.strToUint(chi.URLParam(r, "sid"))

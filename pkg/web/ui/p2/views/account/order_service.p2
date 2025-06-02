@@ -26,9 +26,16 @@
             <td><label for="assigned_dn">Assigned DNs:</label></td>
             <td>
               <select name="assigned_dn" size="15" multiple>
-                {% for dn in DNs %}
-                  <option value="{{ dn.ID }}" {% if dn.ID in AssignedDN %}selected{% endif %}>{{ dn.Number }}{% if dn.CNAM != "" %} - {{ dn.CNAM }}{% endif %}</option>
-                {% endfor %}
+                <optgroup label="Unassigned DNs">
+                  {% for dn in AvailDN %}
+                    <option value="{{ dn.ID }}" {% if dn.ID in AssignedDN %}selected{% endif %}>{{ dn.Number }}{% if dn.CNAM != "" %} - {{ dn.CNAM }}{% endif %}</option>
+                  {% endfor %}
+                </optgroup>
+                <optgroup label="Assigned DNs">
+                  {% for dn in UsedDN %}
+                    <option value="{{ dn.ID }}" {% if dn.ID in AssignedDN %}selected{% endif %}>{{ dn.Number }}{% if dn.CNAM != "" %} - {{ dn.CNAM }}{% endif %}</option>
+                  {% endfor %}
+                </optgroup>
               </select>
             </td>
           </tr>
