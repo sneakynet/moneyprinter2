@@ -27,7 +27,7 @@
             <td>
               <select name="assigned_dn" size="15" multiple>
                 {% for dn in DNs %}
-                  <option value="{{ dn.ID }}" {% if dn.ID in AssignedDN %}selected{% endif %}>{{ dn.Number }}</option>
+                  <option value="{{ dn.ID }}" {% if dn.ID in AssignedDN %}selected{% endif %}>{{ dn.Number }}{% if dn.CNAM != "" %} - {{ dn.CNAM }}{% endif %}</option>
                 {% endfor %}
               </select>
             </td>
