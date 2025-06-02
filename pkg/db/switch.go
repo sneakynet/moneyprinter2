@@ -55,6 +55,22 @@ func (db *DB) PortList(filter *types.Port) ([]types.Port, error) {
 	return ports, res.Error
 }
 
+// PortListAssigned gives a list of all ports that have already been
+// assigned somewhere else.
+func (db *DB) PortListAssigned() ([]types.Port, error) {
+	ports := []types.Port{}
+	res := db.d.Where("id in (?)", db.d.Table(types.NIDPort{}.TableName()).Select("equipment_port_id")).Find(&ports)
+	return ports, res.Error
+}
+
+// PortListAvailable gives a list of ports that are not in use
+// anywhere.
+func (db *DB) PortListAvailable() ([]types.Port, error) {
+	ports := []types.Port{}
+	res := db.d.Where("id not in (?)", db.d.Table(types.NIDPort{}.TableName()).Select("equipment_port_id")).Find(&ports)
+	return ports, res.Error
+}
+
 // PortDelete removes an port from the system
 func (db *DB) PortDelete(p *types.Port) error {
 	return db.d.Delete(p).Error

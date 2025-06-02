@@ -60,6 +60,8 @@ type DB interface {
 
 	PortSave(*types.Port) (uint, error)
 	PortList(*types.Port) ([]types.Port, error)
+	PortListAvailable() ([]types.Port, error)
+	PortListAssigned() ([]types.Port, error)
 	PortDelete(*types.Port) error
 
 	NIDSave(*types.NID) (uint, error)

@@ -88,10 +88,22 @@ func (s *Server) uiViewNIDPortProvisionForm(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	assignedPorts, err := s.d.PortListAssigned()
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	assigned := []uint{}
+	for _, p := range assignedPorts {
+		assigned = append(assigned, p.ID)
+	}
+
 	ctx := pongo2.Context{
 		"nid":       nidList[0],
 		"account":   account,
 		"equipment": equipment,
+		"assignedPorts": assigned,
 		"next":      r.URL.Query().Get("next"),
 	}
 	s.doTemplate(w, r, "views/nid/form_port.p2", ctx)

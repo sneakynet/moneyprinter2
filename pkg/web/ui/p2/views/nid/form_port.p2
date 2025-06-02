@@ -51,7 +51,7 @@
                 {% for eq in equipment %}
                   <optgroup label="{{ eq.Type }}">
                     {% for port in eq.Ports %}
-                      <option value="{{ port.ID }}">{{ port.Number }} ({{ port.Personality }})</option>
+                      <option value="{{ port.ID }}">{% if port.ID in assignedPorts %}(A) {% endif %}{{ port.Number }} ({{ port.Personality }})</option>
                     {% endfor %}
                   </optgroup>
                 {% endfor %}
