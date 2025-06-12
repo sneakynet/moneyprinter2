@@ -76,4 +76,8 @@ type DB interface {
 	ServiceList(*types.Service) ([]types.Service, error)
 	ServiceDelete(*types.Service) error
 	ServiceAssociateDN(*types.Service, []types.DN) error
+
+	FeeSave(*types.Fee) (uint, error)
+	FeeList(*types.Fee) ([]types.Fee, error)
+	FeeDelete(*types.Fee) error
 }

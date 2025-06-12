@@ -183,6 +183,19 @@ func New(opts ...Option) (*Server, error) {
 			r.Get("/premises", s.uiViewWorkPremises)
 			r.Get("/directory", s.uiViewWorkDirectory)
 		})
+
+		a.Route("/money", func(r chi.Router) {
+			r.Route("/fees", func(r chi.Router) {
+				r.Get("/", s.uiViewFeeList)
+				r.Get("/new", s.uiViewFeeFormSingle)
+				r.Post("/new", s.uiViewFeeUpsert)
+
+				r.Get("/{id}", s.uiViewFeeEdit)
+				r.Post("/{id}", s.uiViewFeeUpsert)
+
+				r.Post("/{id}/delete", s.uiViewFeeDelete)
+			})
+		})
 	})
 
 	return s, nil

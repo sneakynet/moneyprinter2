@@ -100,11 +100,11 @@ func (s *Server) uiViewNIDPortProvisionForm(w http.ResponseWriter, r *http.Reque
 	}
 
 	ctx := pongo2.Context{
-		"nid":       nidList[0],
-		"account":   account,
-		"equipment": equipment,
+		"nid":           nidList[0],
+		"account":       account,
+		"equipment":     equipment,
 		"assignedPorts": assigned,
-		"next":      r.URL.Query().Get("next"),
+		"next":          r.URL.Query().Get("next"),
 	}
 	s.doTemplate(w, r, "views/nid/form_port.p2", ctx)
 }

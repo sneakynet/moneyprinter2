@@ -40,6 +40,12 @@
           <a class="nav-item" href="/ui/admin/work/directory">Directory</a>
         </div>
       </div>
+      <div class="nav-container">
+        <div class="nav-header">Money</div>
+        <div class="nav-dropdown">
+          <a class="nav-item" href="/ui/admin/money/fees">Fees</a>
+        </div>
+      </div>
     </nav>
   </div>
   <div class="flex-item">
