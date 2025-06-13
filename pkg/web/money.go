@@ -137,12 +137,17 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
+	if len(lecs) != 1 {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": "LEC failed to load"})
+		return
+	}
+	lec := lecs[0]
 
 	// This is messy, but this type assertion unviels the
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(lecs[0]); err != nil {
+	if err := bp.Preload(lec); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -160,7 +165,7 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 			slog.Error("Potentially lost revenue while hydrating account", "account", account.ID, "error", err)
 			continue
 		}
-		bill, err := bp.BillAccount(account, lecs[0])
+		bill, err := bp.BillAccount(account, lec)
 		if err != nil {
 			slog.Error("Potentially lost revenue due to billing error", "account", account.ID, "error", err)
 			continue
@@ -184,11 +189,16 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	accountID := s.strToUint(chi.URLParam(r, "id"))
-	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
+	if len(lecs) != 1 {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": "LEC failed to load"})
+		return
+	}
+	lec := lecs[0]
 
 	account, err := s.d.AccountGet(&types.Account{ID: accountID})
 	if err != nil {
@@ -200,12 +210,12 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(lecs[0]); err != nil {
+	if err := bp.Preload(lec); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	bill, err := bp.BillAccount(account, lecs[0])
+	bill, err := bp.BillAccount(account, lec)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
