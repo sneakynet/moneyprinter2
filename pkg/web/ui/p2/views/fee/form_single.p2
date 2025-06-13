@@ -5,6 +5,33 @@
 {% block content %}
   <div class="flex-container flex-row flex-center">
     <div class="flex-item foreground box">
+      <h1>Writing Fees</h1>
+      <p>Fees are authored using the interface below, which exposes some of the underpinnings of the data that MoneyPrinter2 works with.  In order to assist you with writing fees, here are some descriptions about how the fee system works.  You can also read more generally about the expression lanaguage <a href="https://expr-lang.org/docs/language-definition" target="_blank">here</a>.</p>
+      <p>Each fee runs in a single step context which has access to fully hydrated information in that context.  The environment is case sensitive, and you must return an integer value for your fee.  If you do not wish to assess a charge, return a value of 0.  The context has the following structure:</p>
+      <pre>
+        FeeContext{
+          Account
+          Service
+          CPE
+        }
+      </pre>
+      <p>Remember that if you want to access attributes on the service type itself, those are contained in Service.LECService.</p>
+
+      <p>In each context where a fee is called, the higher order objects will be populated.  For example, fees that act on services will also have account information available.  The reason that some fields are duplicated, such as the Service field that is otherwise present in the Services list inside of the Account, is to enable a fee to target only the currently active line item, instead of the collection of consumed resoures in aggregate.</p>
+
+      <h2>Static Fees</h2>
+      <p>The simplest fee is just a number that gets assessed no matter what.  Fees are always expressed in centicents to enable low usage rates.</p>
+
+      <h2>Dynamic Fees</h2>
+      <p>The real power of MoneyPrinter2 is to make dynamic fees.  This allows you to bill based on information contained in the data, or have different rates for different attributes of a service plan or combination of services.  The simplest dynamic fee checks if a boolean condition is met, then adds a value if it is:</p>
+      <pre>
+        Service.LECService.Slug=="analog-voice"?10000:0
+      </pre>
+
+      <br />
+      <hr />
+      <br />
+
       <form method="post">
         <table>
           <tr>
@@ -20,7 +47,7 @@
           <tr>
             <td><label for="fee_name">Name:</label></td>
             <td>
-              <input type="text" name="fee_name" value="{{ fee.name }}" />
+              <input type="text" name="fee_name" value="{{ fee.Name }}" />
             </td>
           </tr>
           <tr>
@@ -36,7 +63,7 @@
           <tr>
             <td><label for="fee_expr">Expr:</label></td>
             <td>
-              <textarea name="fee_expr">{{ fee.expr }}</textarea>
+              <textarea name="fee_expr">{{ fee.Expr }}</textarea>
             </td>
           </tr>
           <tr class="center">

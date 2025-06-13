@@ -25,6 +25,7 @@
               <td>{{ fee.Name }}</td>
               <td>{{ fee.Expr }}</td>
               <td class="flex-container flex-row">
+                <a class="flex-item button" href="/ui/admin/money/fees/{{ fee.ID }}/edit">Edit</a>
                 <form action="/ui/admin/money/fees/{{ fee.ID }}/delete" method="post"><input class="flex-item button" type="submit" value="Delete" /></form>
               </td>
             </tr>

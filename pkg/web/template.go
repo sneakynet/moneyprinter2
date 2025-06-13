@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/flosch/pongo2/v6"
+	"github.com/leekchan/accounting"
 )
 
 //go:embed ui
@@ -40,4 +41,16 @@ func (s *Server) filterGetValueByKey(in *pongo2.Value, param *pongo2.Value) (*po
 		return pongo2.AsValue(nil), nil
 	}
 	return pongo2.AsValue(m[param.String()]), nil
+}
+
+// filterFormatMoney converts from the internal representation in the
+// system of centi-cents into actual money with real units.
+func (s *Server) filterFormatMoney(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	cents, ok := in.Interface().(int)
+	if !ok {
+		slog.Warn("Got something that wasn't a number in formatMoney", "something", in)
+		return pongo2.AsValue(""), nil
+	}
+	ac := accounting.Accounting{Symbol: "$", Precision: 2}
+	return pongo2.AsValue(ac.FormatMoney(float64(cents) / 100)), nil
 }

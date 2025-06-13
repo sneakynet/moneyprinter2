@@ -33,6 +33,10 @@ nav a {
     text-decoration: none;
 }
 
+p {
+    margin-bottom: 0.8em;
+}
+
 pre {
     font-family: monospace;
     color: #efefef;
@@ -43,6 +47,14 @@ pre {
     border: 2px solid #6E6E6E;
     overflow-x: auto;
     margin-bottom: 1em;
+}
+
+table {
+    width: 100%;
+}
+
+th {
+    text-align: left;
 }
 
 table, tbody, th, td {
@@ -67,6 +79,10 @@ tr:nth-child(even) {
 #nav {
     background-color: #e0e0e0;
     width: 100%;
+}
+
+.align-right {
+    text-align: right;
 }
 
 .box {

@@ -20,6 +20,10 @@ const (
 	// ordered, for example the cost of provisioning a line.
 	FeeTargetService
 
+	// FeeTargetCPE acts on equipment that has been provisioned to
+	// support a customer's service at their premises.
+	FeeTargetCPE
+
 	// FeeTargetUsageCDR acts on usage of a service, as determined
 	// by a CDR (telephony).
 	FeeTargetUsageCDR
@@ -33,6 +37,8 @@ func (ft FeeTarget) String() string {
 		return "Account"
 	case FeeTargetService:
 		return "Service"
+	case FeeTargetCPE:
+		return "CPE"
 	case FeeTargetUsageCDR:
 		return "Usage - CDR"
 	default:

@@ -19,6 +19,7 @@ func New(opts ...Option) (*Server, error) {
 	s.n = new(http.Server)
 
 	pongo2.RegisterFilter("key", s.filterGetValueByKey)
+	pongo2.RegisterFilter("formatMoney", s.filterFormatMoney)
 
 	var tplRoot fs.FS
 	if tpath := os.Getenv("MONEYD_TEMPLATE_PATH"); tpath != "" {
@@ -190,10 +191,15 @@ func New(opts ...Option) (*Server, error) {
 				r.Get("/new", s.uiViewFeeFormSingle)
 				r.Post("/new", s.uiViewFeeUpsert)
 
-				r.Get("/{id}", s.uiViewFeeEdit)
-				r.Post("/{id}", s.uiViewFeeUpsert)
+				r.Get("/{id}/edit", s.uiViewFeeEdit)
+				r.Post("/{id}/edit", s.uiViewFeeUpsert)
 
 				r.Post("/{id}/delete", s.uiViewFeeDelete)
+			})
+			r.Route("/bills", func(r chi.Router) {
+				r.Get("/", s.uiViewBillList)
+				r.Get("/by-lec/{id}", s.uiViewAllBillsForLEC)
+				r.Get("/by-account/{id}", s.uiViewBillForAccount)
 			})
 		})
 	})

@@ -44,6 +44,7 @@
         <div class="nav-header">Money</div>
         <div class="nav-dropdown">
           <a class="nav-item" href="/ui/admin/money/fees">Fees</a>
+          <a class="nav-item" href="/ui/admin/money/bills">Bills</a>
         </div>
       </div>
     </nav>
