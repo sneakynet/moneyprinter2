@@ -155,6 +155,7 @@ func (s *Server) uiViewPremisesSubmitBulk(w http.ResponseWriter, r *http.Request
 				return
 			}
 		}
+		_ = err // This shuts up a spurious warning in staticcheck
 	}
 	http.Redirect(w, r, "/ui/admin/geo/premises", http.StatusSeeOther)
 }
