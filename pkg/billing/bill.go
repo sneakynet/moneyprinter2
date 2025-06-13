@@ -50,6 +50,7 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 	slog.Debug("Billing Account", "account", ac.ID, "lec", lec.ID)
 	b := Bill{
 		Account: ac,
+		LEC: lec,
 	}
 
 	fctx := FeeContext{Account: ac}

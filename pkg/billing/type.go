@@ -20,6 +20,7 @@ type ProcessorOption func(*Processor)
 // Bill contains actualized Fees that are evaluated versions of
 // database fees.
 type Bill struct {
+	LEC     types.LEC
 	Account types.Account
 	Lines   []LineItem
 }

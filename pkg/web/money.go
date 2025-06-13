@@ -1,11 +1,15 @@
 package web
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/leekchan/accounting"
 
 	"github.com/sneakynet/moneyprinter2/pkg/billing"
 	"github.com/sneakynet/moneyprinter2/pkg/db"
@@ -128,13 +132,17 @@ func (s *Server) uiViewBillList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
-	lecID := s.strToUint(chi.URLParam(r, "id"))
+	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
 
 	// This is messy, but this type assertion unviels the
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(types.LEC{ID: lecID}); err != nil {
+	if err := bp.Preload(lecs[0]); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -152,7 +160,7 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 			slog.Error("Potentially lost revenue while hydrating account", "account", account.ID, "error", err)
 			continue
 		}
-		bill, err := bp.BillAccount(account, types.LEC{ID: lecID})
+		bill, err := bp.BillAccount(account, lecs[0])
 		if err != nil {
 			slog.Error("Potentially lost revenue due to billing error", "account", account.ID, "error", err)
 			continue
@@ -164,7 +172,11 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 	}
 	switch r.Header.Get("Content-type") {
 	case "text/plain":
-		s.formatBillsText(w, bills)
+		width := s.strToUint(r.URL.Query().Get("width"))
+		if width == 0 {
+			width = 80
+		}
+		s.formatBillsText(w, bills, int(width))
 	default:
 		s.formatBillsHTML(w, bills)
 	}
@@ -172,7 +184,11 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	accountID := s.strToUint(chi.URLParam(r, "id"))
-	lecID := s.strToUint(r.URL.Query().Get("lec"))
+	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
 
 	account, err := s.d.AccountGet(&types.Account{ID: accountID})
 	if err != nil {
@@ -184,12 +200,12 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(types.LEC{ID: lecID}); err != nil {
+	if err := bp.Preload(lecs[0]); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	bill, err := bp.BillAccount(account, types.LEC{ID: lecID})
+	bill, err := bp.BillAccount(account, lecs[0])
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -197,14 +213,75 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Header.Get("Content-type") {
 	case "text/plain":
-		s.formatBillsText(w, []billing.Bill{bill})
+		width := s.strToUint(r.URL.Query().Get("width"))
+		if width == 0 {
+			width = 80
+		}
+		s.formatBillsText(w, []billing.Bill{bill}, int(width))
 	default:
 		s.formatBillsHTML(w, []billing.Bill{bill})
 	}
 }
 
-func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill) {
+func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, width int) {
+	for _, bill := range bills {
+		t := table.NewWriter()
+		t.SetColumnConfigs([]table.ColumnConfig{{
+			Name:        "Service Bill",
+			Align:       text.AlignCenter,
+			AlignHeader: text.AlignCenter,
+		}})
+		t.Style().Options.DrawBorder = false
+		t.Style().Size.WidthMin = width - 3
+		t.SetOutputMirror(w)
+		t.SetAllowedRowLength(width)
+		t.AppendHeader(table.Row{"Service Bill"})
+		t.AppendRow(table.Row{bill.LEC.Name + " - " + bill.LEC.Byline})
+		t.AppendRow(table.Row{bill.LEC.Website})
+		t.Render()
+		fmt.Fprintln(w, "")
 
+		t = table.NewWriter()
+		t.Style().Options.DrawBorder = false
+		t.Style().Size.WidthMin = width - 3
+		t.SetOutputMirror(w)
+		t.SetAllowedRowLength(width)
+		t.AppendHeader(table.Row{"Name", "DBA", "Contact"})
+		t.AppendRow(table.Row{bill.Account.Name, bill.Account.Alias, bill.Account.Contact})
+		t.Render()
+		fmt.Fprintln(w, "")
+
+		t = table.NewWriter()
+		t.SetColumnConfigs([]table.ColumnConfig{
+			{
+				Name:        "Cost",
+				Align:       text.AlignRight,
+				AlignHeader: text.AlignRight,
+			},
+		})
+		t.Style().Options.DrawBorder = false
+		t.Style().Size.WidthMin = width - 3
+		t.SetOutputMirror(w)
+		t.SetAllowedRowLength(width)
+		t.AppendHeader(table.Row{"Fee", "Item", "Cost"})
+		ac := accounting.Accounting{Symbol: "$", Precision: 2}
+		for _, item := range bill.Lines {
+			t.AppendRow(table.Row{item.Fee, item.Item, ac.FormatMoney(float64(item.Cost) / 100)})
+		}
+		t.SortBy([]table.SortBy{{Name: "Fee", Mode: table.Asc}})
+		t.Render()
+		fmt.Fprintln(w, "")
+
+		t = table.NewWriter()
+		t.Style().Options.DrawBorder = false
+		t.SetOutputMirror(w)
+		t.SetAllowedRowLength(width)
+		t.AppendRow(table.Row{"Grand Total: " + ac.FormatMoney(float64(bill.Cost())/100)})
+		t.Render()
+
+		// Form feed, useful for line printers
+		fmt.Fprintf(w, "%c", '\u000c')
+	}
 }
 
 func (s *Server) formatBillsHTML(w http.ResponseWriter, bills []billing.Bill) {
