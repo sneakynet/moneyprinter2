@@ -80,4 +80,7 @@ type DB interface {
 	FeeSave(*types.Fee) (uint, error)
 	FeeList(*types.Fee) ([]types.Fee, error)
 	FeeDelete(*types.Fee) error
+
+	CDRSave(*types.CDR) (uint, error)
+	CDRList(*types.CDR) ([]types.CDR, error)
 }

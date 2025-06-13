@@ -44,6 +44,14 @@ func New(opts ...Option) (*Server, error) {
 	s.r.Get("/", s.landing)
 	s.r.Get("/login", s.login)
 
+	s.r.Route("/api/admin", func(a chi.Router) {
+		a.Route("/usage", func(r chi.Router) {
+			r.Route("/cdr", func(r chi.Router) {
+				r.Put("/ingest", s.apiCDRIngest)
+			})
+		})
+	})
+
 	s.r.Route("/ui/admin", func(a chi.Router) {
 		a.Route("/accounts", func(r chi.Router) {
 			r.Get("/", s.uiViewAccountList)
