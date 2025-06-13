@@ -15,6 +15,7 @@
             <th>ID</th>
             <th>Assessed By</th>
             <th>Name</th>
+            <th>Target</th>
             <th>Expression</th>
             <th>Actions</th>
           </tr>
@@ -23,6 +24,7 @@
               <td>{{ fee.ID }}</td>
               <td>{{ fee.AssessedBy.Name }}</td>
               <td>{{ fee.Name }}</td>
+              <td>{{ fee.Target }}</td>
               <td>{{ fee.Expr }}</td>
               <td class="flex-container flex-row">
                 <a class="flex-item button" href="/ui/admin/money/fees/{{ fee.ID }}/edit">Edit</a>

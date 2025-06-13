@@ -63,6 +63,7 @@ func (s *Server) uiViewFeeEdit(w http.ResponseWriter, r *http.Request) {
 		types.FeeTargetUnassigned,
 		types.FeeTargetAccount,
 		types.FeeTargetService,
+		types.FeeTargetCPE,
 		types.FeeTargetUsageCDR,
 	}
 
