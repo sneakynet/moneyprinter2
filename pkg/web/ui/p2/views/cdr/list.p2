@@ -1,0 +1,26 @@
+{% extends "../../base.p2" %}
+
+{% block title %}CDRs | MoneyPrinter{% endblock %}
+
+{% block content %}
+  <div class="flex-container flex-row flex-center">
+    <div class="flex-item flex-max foreground box">
+      <table>
+        <tr>
+          <th>CLID</th>
+          <th>DNIS</th>
+          <th>Start Time</th>
+          <th>Duration</th>
+        </tr>
+        {% for cdr in cdrs %}
+          <tr>
+            <td>{{ cdr.CLID }}</td>
+            <td>{{ cdr.DNIS }}</td>
+            <td>{{ cdr.Start }}</td>
+            <td>{{ cdr.End.Sub(cdr.Start) }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

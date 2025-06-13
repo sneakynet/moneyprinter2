@@ -47,7 +47,7 @@ func New(opts ...Option) (*Server, error) {
 	s.r.Route("/api/admin", func(a chi.Router) {
 		a.Route("/usage", func(r chi.Router) {
 			r.Route("/cdr", func(r chi.Router) {
-				r.Put("/ingest", s.apiCDRIngest)
+				r.Post("/ingest", s.apiCDRIngest)
 			})
 		})
 	})
@@ -209,6 +209,10 @@ func New(opts ...Option) (*Server, error) {
 				r.Get("/by-lec/{id}", s.uiViewAllBillsForLEC)
 				r.Get("/by-account/{id}", s.uiViewBillForAccount)
 			})
+		})
+
+		a.Route("/cdrs", func(r chi.Router) {
+			r.Get("/list", s.uiViewCDRList)
 		})
 	})
 

@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"time"
 
 	"gorm.io/gorm"
@@ -18,11 +19,16 @@ type CDR struct {
 	LogTime time.Time
 	CLLI    string
 
-	CLID uint `gorm:"column:clid"`
-	DNIS uint
+	CLID string `gorm:"column:clid"`
+	DNIS string
 
 	Start time.Time
 	End   time.Time
 
 	Flags uint64
+}
+
+// BillText formats the CDR so that it looks right on a bill.
+func (cdr CDR) BillText() string {
+	return fmt.Sprintf("Call to %s (%s)", cdr.DNIS, cdr.End.Sub(cdr.Start))
 }

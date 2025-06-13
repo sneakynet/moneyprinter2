@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"fmt"
 	"log/slog"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
@@ -96,7 +97,11 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 		for _, fee := range p.fees[types.FeeTargetService] {
 			fctx.Service = svc
 			l := fee.Evaluate(fctx)
-			l.Item = svc.LECService.Name
+			if svc.DNList() != "" {
+				l.Item = fmt.Sprintf("%s (%s)", svc.LECService.Name, svc.DNList())
+			} else {
+				l.Item = svc.LECService.Name
+			}
 			if l.Cost == 0 {
 				continue
 			}
@@ -104,6 +109,26 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 		}
 
 		// Usage based charges go here.
+		for _, dn := range svc.AssignedDN {
+			slog.Debug("Billing for DN on service", "dn", dn.Number, "service", svc.LECService.Slug, "account", ac.ID)
+			cdrs, err := p.db.CDRList(&types.CDR{CLID: dn.Number})
+			if err != nil {
+				slog.Error("Error retreiving CDRs to bill", "account", ac.ID, "dn", dn.Number, "error", err)
+				return Bill{}, err
+			}
+
+			for _, cdr := range cdrs {
+				for _, fee := range p.fees[types.FeeTargetUsageCDR] {
+					fctx.CDR = cdr
+					l := fee.Evaluate(fctx)
+					l.Item = cdr.BillText()
+					if l.Cost == 0 {
+						continue
+					}
+					b.Lines = append(b.Lines, l)
+				}
+			}
+		}
 	}
 
 	// These are the random unassigned fees that wind up on the

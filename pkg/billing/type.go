@@ -37,6 +37,7 @@ type FeeContext struct {
 	Account types.Account
 	Service types.Service
 	CPE     types.NID
+	CDR     types.CDR
 }
 
 // LineItem lists compose together to form bills.  These contain a
