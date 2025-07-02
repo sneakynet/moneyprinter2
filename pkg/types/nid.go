@@ -80,8 +80,6 @@ type NIDPort struct {
 
 	ID              uint
 	NIDID           uint
-	EquipmentPortID uint
-	EquipmentPort   Port
 
 	Services []Service `gorm:"many2many:service_appearances;"`
 }

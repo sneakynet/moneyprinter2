@@ -220,11 +220,30 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 		return
 	}
 
+	equipment, err := s.d.EquipmentList(nil)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	assignedPorts, err := s.d.PortListAssigned()
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	assigned := []uint{}
+	for _, p := range assignedPorts {
+		assigned = append(assigned, p.ID)
+	}
+
 	ctx := pongo2.Context{
 		"Account":     account,
 		"LECServices": lecServices,
 		"AvailDN":     availDN,
 		"UsedDN":      usedDN,
+		"Equipment":   equipment,
+		"Assigned":    assigned,
 	}
 
 	sid := s.strToUint(chi.URLParam(r, "sid"))
@@ -258,9 +277,10 @@ func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Reque
 	}
 
 	svc := types.Service{
-		ID:           s.strToUint(r.FormValue("service_id")),
-		LECServiceID: s.strToUint(r.FormValue("lec_service_id")),
-		AccountID:    s.strToUint(chi.URLParam(r, "id")),
+		ID:              s.strToUint(r.FormValue("service_id")),
+		LECServiceID:    s.strToUint(r.FormValue("lec_service_id")),
+		AccountID:       s.strToUint(chi.URLParam(r, "id")),
+		EquipmentPortID: s.strToUint(r.FormValue("equipment_port_id")),
 	}
 
 	if _, err := s.d.ServiceSave(&svc); err != nil {

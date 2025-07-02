@@ -59,7 +59,7 @@ func (db *DB) PortList(filter *types.Port) ([]types.Port, error) {
 // assigned somewhere else.
 func (db *DB) PortListAssigned() ([]types.Port, error) {
 	ports := []types.Port{}
-	res := db.d.Where("id in (?)", db.d.Table(types.NIDPort{}.TableName()).Select("equipment_port_id")).Find(&ports)
+	res := db.d.Where("id in (?)", db.d.Table(types.Service{}.TableName()).Select("equipment_port_id")).Find(&ports)
 	return ports, res.Error
 }
 
@@ -67,7 +67,7 @@ func (db *DB) PortListAssigned() ([]types.Port, error) {
 // anywhere.
 func (db *DB) PortListAvailable() ([]types.Port, error) {
 	ports := []types.Port{}
-	res := db.d.Where("id not in (?)", db.d.Table(types.NIDPort{}.TableName()).Select("equipment_port_id")).Find(&ports)
+	res := db.d.Where("id not in (?)", db.d.Table(types.Service{}.TableName()).Select("equipment_port_id")).Find(&ports)
 	return ports, res.Error
 }
 

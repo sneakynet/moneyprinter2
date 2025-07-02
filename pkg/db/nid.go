@@ -23,7 +23,7 @@ func (db *DB) NIDList(filter *types.NID) ([]types.NID, error) {
 // loaded.
 func (db *DB) NIDListFull(filter *types.NID) ([]types.NID, error) {
 	NIDs := []types.NID{}
-	res := db.d.Where(filter).Preload(clause.Associations).Preload("Premise.Wirecenter").Preload("Ports.Services.LECService").Preload("Ports.Services.AssignedDN").Preload("Ports.EquipmentPort.Equipment.Switch").Find(&NIDs)
+	res := db.d.Where(filter).Preload(clause.Associations).Preload("Premise.Wirecenter").Preload("Ports.Services.LECService").Preload("Ports.Services.AssignedDN").Find(&NIDs)
 	return NIDs, res.Error
 }
 

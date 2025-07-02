@@ -45,20 +45,6 @@
             </td>
           </tr>
           <tr>
-            <td><label for="equipment_port_id">Equipment Port:</label></td>
-            <td>
-              <select name="equipment_port_id">
-                {% for eq in equipment %}
-                  <optgroup label="{{ eq.Type }}">
-                    {% for port in eq.Ports %}
-                      <option value="{{ port.ID }}">{% if port.ID in assignedPorts %}(A) {% endif %}{{ port.Number }} ({{ port.Personality }})</option>
-                    {% endfor %}
-                  </optgroup>
-                {% endfor %}
-              </select>
-            </td>
-          </tr>
-          <tr>
             <td colspan="2"><input type="submit" value="Save" />
           </tr>
         </table>

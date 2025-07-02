@@ -27,17 +27,11 @@
                   <tr>
                     <th>Port</th>
                     <th>DN</th>
-                    <th>Equipment</th>
                   </tr>
                   {% for port in nid.Ports %}
                     <tr>
                       <td>{{ forloop.Counter }}</td>
                       <td>{{ port.AllDNs() }}</td>
-                      <td>
-                        {% if port.AllDNs() != "" %}
-                          <a href="/ui/admin/switches/{{ port.EquipmentPort.Equipment.Switch.ID }}">{{ port.EquipmentPort.Equipment.Switch.CLLI }}</a> - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})
-                        {% endif %}
-                      </td>
                     </tr>
                   {% endfor %}
                 </table>

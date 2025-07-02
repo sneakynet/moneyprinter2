@@ -28,16 +28,20 @@
       </div>
       <table>
         <tr>
+          <th>ID</th>
           <th>Service</th>
           <th>Provided By</th>
           <th>DNs</th>
+          <th>Equipment</th>
           <th>Actions</th>
         </tr>
         {% for service in account.Services %}
           <tr>
+            <td>{{ service.ID }}</td>
             <td>{{ service.LECService.Name }}</td>
             <td>{{ service.LECService.LEC.Name }}</td>
             <td>{{ service.DNList }}</td>
+            <td>{{ service.EquipmentPort.Personality }} - {{ service.EquipmentPort.Number }}</td>
             <td>
               <div class="flex-container flex-row flex-center">
                 <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/order-service/{{ service.ID }}">Edit</a>
@@ -124,18 +128,12 @@
                     <th>Port</th>
                     <th>Service</th>
                     <th>DN</th>
-                    <th>Equipment</th>
                   </tr>
                   {% for port in nid.Ports %}
                     <tr>
                       <td>{{ forloop.Counter }}</td>
                       <td>{{ port.ServiceList() }}</td>
                       <td>{{ port.AllDNs() }}</td>
-                      <td>
-                        {% if port.AllDNs() != "" %}
-                          <a href="/ui/admin/switches/{{ port.EquipmentPort.Equipment.Switch.ID }}">{{ port.EquipmentPort.Equipment.Switch.CLLI }}</a> - {{ port.EquipmentPort.Number }} ({{ port.EquipmentPort.Personality }})
-                        {% endif %}
-                      </td>
                     </tr>
                   {% endfor %}
                 </table>

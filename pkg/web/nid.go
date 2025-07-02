@@ -82,28 +82,9 @@ func (s *Server) uiViewNIDPortProvisionForm(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	equipment, err := s.d.EquipmentList(&types.Equipment{WirecenterID: nidList[0].Premise.WirecenterID})
-	if err != nil {
-		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
-		return
-	}
-
-	assignedPorts, err := s.d.PortListAssigned()
-	if err != nil {
-		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
-		return
-	}
-
-	assigned := []uint{}
-	for _, p := range assignedPorts {
-		assigned = append(assigned, p.ID)
-	}
-
 	ctx := pongo2.Context{
 		"nid":           nidList[0],
 		"account":       account,
-		"equipment":     equipment,
-		"assignedPorts": assigned,
 		"next":          r.URL.Query().Get("next"),
 	}
 	s.doTemplate(w, r, "views/nid/form_port.p2", ctx)
@@ -118,7 +99,6 @@ func (s *Server) uiViewNIDPortProvision(w http.ResponseWriter, r *http.Request) 
 	nidPort := types.NIDPort{
 		ID:              s.strToUint(r.FormValue("nid_port_id")),
 		NIDID:           s.strToUint(chi.URLParam(r, "id")),
-		EquipmentPortID: s.strToUint(r.FormValue("equipment_port_id")),
 	}
 
 	if _, err := s.d.NIDPortSave(&nidPort); err != nil {
