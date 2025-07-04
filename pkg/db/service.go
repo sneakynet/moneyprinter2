@@ -19,6 +19,14 @@ func (db *DB) ServiceList(filter *types.Service) ([]types.Service, error) {
 	return svcs, res.Error
 }
 
+// ServiceListFull retrieves services fully populated down to the
+// switch and equipment.
+func (db *DB) ServiceListFull(filter *types.Service) ([]types.Service, error) {
+	svcs := []types.Service{}
+	res := db.d.Where(filter).Preload(clause.Associations).Preload("EquipmentPort.Equipment.Switch").Find(&svcs)
+	return svcs, res.Error
+}
+
 // ServiceDelete permanently deletes the matching service.
 func (db *DB) ServiceDelete(s *types.Service) error {
 	return db.d.Delete(s).Error

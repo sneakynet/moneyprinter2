@@ -74,6 +74,7 @@ type DB interface {
 
 	ServiceSave(*types.Service) (uint, error)
 	ServiceList(*types.Service) ([]types.Service, error)
+	ServiceListFull(*types.Service) ([]types.Service, error)
 	ServiceDelete(*types.Service) error
 	ServiceAssociateDN(*types.Service, []types.DN) error
 

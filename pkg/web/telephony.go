@@ -103,15 +103,22 @@ func (s *Server) uiViewSwitchConfig(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	nids, err := s.d.NIDListFull(&types.NID{})
+	svcs := []types.Service{}
+	svcsOrig, err := s.d.ServiceListFull(nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
+	for _, s := range svcsOrig {
+		if s.EquipmentPort.Equipment.Switch.CLLI != sw[0].CLLI {
+			continue
+		}
+		svcs = append(svcs, s)
+	}
 
 	ctx := pongo2.Context{
-		"switch": sw[0],
-		"nids":   nids,
+		"switch":   sw[0],
+		"services": svcs,
 	}
 
 	tpl, err := pongo2.FromString(sw[0].ConfigTemplate)

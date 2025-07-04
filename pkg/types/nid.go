@@ -78,8 +78,8 @@ func (n NID) AfterCreate(tx *gorm.DB) error {
 type NIDPort struct {
 	gorm.Model
 
-	ID              uint
-	NIDID           uint
+	ID    uint
+	NIDID uint
 
 	Services []Service `gorm:"many2many:service_appearances;"`
 }
