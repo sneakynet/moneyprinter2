@@ -83,9 +83,10 @@ func (s *Server) uiViewNIDPortProvisionForm(w http.ResponseWriter, r *http.Reque
 	}
 
 	ctx := pongo2.Context{
-		"nid":           nidList[0],
-		"account":       account,
-		"next":          r.URL.Query().Get("next"),
+		"nid":     nidList[0],
+		"account": account,
+		"next":    r.URL.Query().Get("next"),
+		"portNum": r.URL.Query().Get("port"),
 	}
 	s.doTemplate(w, r, "views/nid/form_port.p2", ctx)
 }
@@ -97,8 +98,8 @@ func (s *Server) uiViewNIDPortProvision(w http.ResponseWriter, r *http.Request) 
 	}
 
 	nidPort := types.NIDPort{
-		ID:              s.strToUint(r.FormValue("nid_port_id")),
-		NIDID:           s.strToUint(chi.URLParam(r, "id")),
+		ID:    s.strToUint(r.FormValue("nid_port_id")),
+		NIDID: s.strToUint(chi.URLParam(r, "id")),
 	}
 
 	if _, err := s.d.NIDPortSave(&nidPort); err != nil {
@@ -112,6 +113,18 @@ func (s *Server) uiViewNIDPortProvision(w http.ResponseWriter, r *http.Request) 
 	}
 
 	if err := s.d.NIDPortAssociateService(&nidPort, svcs); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	http.Redirect(w, r, r.URL.Query().Get("next"), http.StatusSeeOther)
+}
+
+func (s *Server) uiViewNIDPortDeprovision(w http.ResponseWriter, r *http.Request) {
+	nidPort := types.NIDPort{
+		ID: s.strToUint(chi.URLParam(r, "pid")),
+	}
+
+	if err := s.d.NIDPortAssociateService(&nidPort, []types.Service{}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

@@ -37,9 +37,9 @@
           <tr>
             <td><label for="nid_port_id">NID Port:</label></td>
             <td>
-              <select name="nid_port_id">
+              <select name="nid_port_id" {% if portNum %}disabled{% endif %}>
                 {% for port in nid.Ports %}
-                  <option value="{{ port.ID }}">Port {{ forloop.Counter }}</option>
+                  <option value="{{ port.ID }}" {% if portNum|integer == forloop.Counter %}selected{% endif %}>Port {{ forloop.Counter }}</option>
                 {% endfor %}
               </select>
             </td>

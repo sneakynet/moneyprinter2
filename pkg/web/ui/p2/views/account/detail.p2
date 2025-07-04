@@ -128,12 +128,19 @@
                     <th>Port</th>
                     <th>Service</th>
                     <th>DN</th>
+                    <th>Actions</th>
                   </tr>
                   {% for port in nid.Ports %}
                     <tr>
                       <td>{{ forloop.Counter }}</td>
                       <td>{{ port.ServiceList() }}</td>
                       <td>{{ port.AllDNs() }}</td>
+                      <td class="flex-container flex-row">
+                        <a class="flex-item button" href="/ui/admin/nid/{{ nid.ID }}/ports/provision?next=/ui/admin/accounts/{{ account.ID }}&port={{ forloop.Counter }}">Provision</a>
+                        <form method="post" action="/ui/admin/nid/{{ nid.ID }}/ports/{{ port.ID }}/deprovision?next=/ui/admin/accounts/{{ account.ID }}">
+                          <input class="flex-item button"  type="submit" value="Deprovision" />
+                        </form>
+                      </td>
                     </tr>
                   {% endfor %}
                 </table>
