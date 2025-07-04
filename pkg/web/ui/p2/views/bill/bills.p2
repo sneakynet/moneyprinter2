@@ -7,6 +7,7 @@
     <div class="flex-container flex-row flex-center page">
       <div class="flex-item flex-max foreground box">
         <p>Account #{{ bill.Account.ID }}</p>
+        <p>Address {{ bill.Account.BillAddr }}</p>
         <table>
           <tr>
             <th>Name</th>

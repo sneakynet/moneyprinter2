@@ -10,10 +10,11 @@ import (
 type Account struct {
 	gorm.Model
 
-	ID      uint
-	Name    string
-	Alias   string
-	Contact string
+	ID       uint
+	Name     string
+	Alias    string
+	Contact  string
+	BillAddr string
 
 	Premises []Premise
 	Services []Service

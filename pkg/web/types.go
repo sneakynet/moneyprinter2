@@ -23,7 +23,7 @@ type Option func(*Server)
 
 // DB sets the specific calls that the web layer will make.
 type DB interface {
-	AccountCreate(*types.Account) (uint, error)
+	AccountSave(*types.Account) (uint, error)
 	AccountList(*types.Account) ([]types.Account, error)
 	AccountGet(*types.Account) (types.Account, error)
 

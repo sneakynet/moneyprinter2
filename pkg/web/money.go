@@ -221,7 +221,7 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	switch r.Header.Get("Content-type") {
+	switch r.Header.Get("Accept-encoding") {
 	case "text/plain":
 		width := s.strToUint(r.URL.Query().Get("width"))
 		if width == 0 {
@@ -246,8 +246,9 @@ func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, wi
 		t.SetOutputMirror(w)
 		t.SetAllowedRowLength(width)
 		t.AppendHeader(table.Row{"Service Bill"})
-		t.AppendRow(table.Row{bill.LEC.Name + " - " + bill.LEC.Byline})
+		t.AppendHeader(table.Row{bill.Account.BillAddr})
 		t.AppendRow(table.Row{bill.LEC.Website})
+		t.AppendRow(table.Row{bill.LEC.Name + " - " + bill.LEC.Byline})
 		t.Render()
 		fmt.Fprintln(w, "")
 

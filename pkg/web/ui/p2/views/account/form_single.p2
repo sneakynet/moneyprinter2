@@ -9,15 +9,19 @@
         <table>
           <tr>
             <td><label for="account_name">Name:</label></td>
-            <td><input type="text" name="account_name" /></td>
+            <td><input type="text" name="account_name" value="{{ account.Name }}" /></td>
           </tr>
           <tr>
             <td><label for="account_alias">Alias:</label></td>
-            <td><input type="text" name="account_alias" /></td>
+            <td><input type="text" name="account_alias" value="{{ account.Alias }}" /></td>
           </tr>
           <tr>
             <td><label for="account_contact">Contact:</label></td>
-            <td><input type="text" name="account_contact" /></td>
+            <td><input type="text" name="account_contact" value="{{ account.Contact }}" /></td>
+          </tr>
+          <tr>
+            <td><label for="account_billing">Billing:</label></td>
+            <td><input type="text" name="account_billing" value="{{ account.BillAddr }}" /></td>
           </tr>
           <tr class="center">
             <td colspan="2"><input type="submit" value="Submit" /></td>

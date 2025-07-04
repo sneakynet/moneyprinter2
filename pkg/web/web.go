@@ -56,6 +56,8 @@ func New(opts ...Option) (*Server, error) {
 		a.Route("/accounts", func(r chi.Router) {
 			r.Get("/", s.uiViewAccountList)
 			r.Get("/{id}", s.uiViewAccountDetail)
+			r.Get("/{id}/edit", s.uiViewAccountEdit)
+			r.Post("/{id}/edit", s.uiAccountFormSubmitSingle)
 			r.Get("/new", s.uiViewAccountFormSingle)
 			r.Get("/bulk", s.uiViewAccountFormBulk)
 

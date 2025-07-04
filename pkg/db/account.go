@@ -6,10 +6,9 @@ import (
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
 
-// AccountCreate creates a new account within the system.
-func (db *DB) AccountCreate(a *types.Account) (uint, error) {
-	res := db.d.Create(a)
-	return a.ID, res.Error
+// AccountSave creates a new account within the system.
+func (db *DB) AccountSave(a *types.Account) (uint, error) {
+	return a.ID, db.d.Save(a).Error
 }
 
 // AccountList provides a listing of all accounts in the system.  This

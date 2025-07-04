@@ -49,22 +49,28 @@ func (s *Server) uiViewAccountFormBulk(w http.ResponseWriter, r *http.Request) {
 	s.doTemplate(w, r, "views/account/form_bulk.p2", nil)
 }
 
+func (s *Server) uiViewAccountEdit(w http.ResponseWriter, r *http.Request) {
+	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	s.doTemplate(w, r, "views/account/form_single.p2", pongo2.Context{"account": account})
+}
+
 func (s *Server) uiAccountFormSubmitSingle(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	aName := r.FormValue("account_name")
-	aContact := r.FormValue("account_contact")
-	aAlias := r.FormValue("account_alias")
-
-	slog.Debug("Want to create account", "name", aName, "contact", aContact)
-
-	id, err := s.d.AccountCreate(&types.Account{
-		Name:    aName,
-		Contact: aContact,
-		Alias:   aAlias,
+	id, err := s.d.AccountSave(&types.Account{
+		ID:       s.strToUint(chi.URLParam(r, "id")),
+		Name:     r.FormValue("account_name"),
+		Contact:  r.FormValue("account_contact"),
+		Alias:    r.FormValue("account_alias"),
+		BillAddr: r.FormValue("account_billing"),
 	})
 
 	if err != nil {
@@ -93,10 +99,11 @@ func (s *Server) uiAccountFormSubmitBulk(w http.ResponseWriter, r *http.Request)
 		_, err := s.d.AccountGet(&types.Account{Name: record["Name"]})
 		if err != nil {
 			slog.Warn("Error fetching account by name", "error", err)
-			_, err = s.d.AccountCreate(&types.Account{
-				Name:    record["Name"],
-				Contact: record["Contact"],
-				Alias:   record["Alias"],
+			_, err = s.d.AccountSave(&types.Account{
+				Name:     record["Name"],
+				Contact:  record["Contact"],
+				Alias:    record["Alias"],
+				BillAddr: record["Billing"],
 			})
 			if err != nil {
 				s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
