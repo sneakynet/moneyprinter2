@@ -27,6 +27,7 @@ func (db *DB) Migrate() error {
 	tables := []interface{}{
 		&types.Account{},
 		&types.CDR{},
+		&types.Charge{},
 		&types.DN{},
 		&types.Equipment{},
 		&types.Fee{},

@@ -73,6 +73,10 @@ func New(opts ...Option) (*Server, error) {
 			r.Post("/{id}/order-service", s.uiViewAccountServiceUpsert)
 			r.Post("/{id}/order-service/{sid}", s.uiViewAccountServiceUpsert)
 			r.Post("/{id}/cancel-service/{sid}", s.uiViewAccountServiceCancel)
+
+			r.Get("/{id}/add-charge", s.uiViewAccountChargeForm)
+			r.Post("/{id}/add-charge", s.uiViewAccountChargeUpsert)
+			r.Post("/{id}/cancel-charge/{cid}", s.uiViewAccountChargeCancel)
 		})
 		a.Route("/geo", func(b chi.Router) {
 			b.Route("/wirecenters", func(r chi.Router) {

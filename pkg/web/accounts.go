@@ -34,9 +34,16 @@ func (s *Server) uiViewAccountDetail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	charges, err := s.d.ChargeList(&types.Charge{AccountID: account.ID})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
 	ctx := pongo2.Context{
 		"account": account,
 		"nids":    NIDs,
+		"charges": charges,
 	}
 	s.doTemplate(w, r, "views/account/detail.p2", ctx)
 }
@@ -309,6 +316,49 @@ func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Reque
 
 func (s *Server) uiViewAccountServiceCancel(w http.ResponseWriter, r *http.Request) {
 	if err := s.d.ServiceDelete(&types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))}); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/ui/admin/accounts/%s", chi.URLParam(r, "id")), http.StatusSeeOther)
+}
+
+func (s *Server) uiViewAccountChargeForm(w http.ResponseWriter, r *http.Request) {
+	ctx := pongo2.Context{}
+
+	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	ctx["lecs"] = account.LECList()
+
+	s.doTemplate(w, r, "views/account/charge.p2", ctx)
+}
+
+func (s *Server) uiViewAccountChargeUpsert(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	charge := types.Charge{
+		AccountID:  s.strToUint(chi.URLParam(r, "id")),
+		LECReferer: s.strToUint(r.FormValue("assessed_by")),
+		Item:       r.FormValue("charge_item"),
+		Cost:       s.strToInt(r.FormValue("charge_cost")),
+	}
+
+	if _, err := s.d.ChargeSave(&charge); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/ui/admin/accounts/%s", chi.URLParam(r, "id")), http.StatusSeeOther)
+}
+
+func (s *Server) uiViewAccountChargeCancel(w http.ResponseWriter, r *http.Request) {
+	if err := s.d.ChargeDelete(&types.Charge{ID: s.strToUint(chi.URLParam(r, "cid"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
