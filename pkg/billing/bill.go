@@ -65,6 +65,14 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 		b.Lines = append(b.Lines, l)
 	}
 
+	charges, err := p.db.ChargeList(&types.Charge{AccountID: ac.ID})
+	if err != nil {
+		slog.Warn("Error pulling account specific charges", "error", err)
+	}
+	for _, c := range charges {
+		b.Lines = append(b.Lines, LineItem{Item: "Additional Charges", Fee: c.Item, Cost: c.Cost})
+	}
+
 	// Bill for any equipment provisioned at the customer's
 	// premises.  This technically gets billed for CLECs even when
 	// the NID is owned by the ILEC, but presumably the CLEC is

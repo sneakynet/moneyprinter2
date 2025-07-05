@@ -63,3 +63,16 @@ type Fee struct {
 	AssessedBy LEC `gorm:"foreignKey:LECReferer"`
 	LECReferer uint
 }
+
+// A Charge directly resolves to a LineItem and is a pass through type
+// to enable making one-off charges to an account.
+type Charge struct {
+	ID uint
+
+	AccountID  uint
+	AssessedBy LEC `gorm:"foreignKey:LECReferer"`
+	LECReferer uint
+
+	Item string
+	Cost int
+}

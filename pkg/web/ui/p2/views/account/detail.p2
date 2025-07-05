@@ -61,6 +61,40 @@
       <hr />
       <br />
 
+      <p>Charges</p>
+      <div class="flex-container flex-row flex-center">
+        <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/add-charge">Add Charge</a>
+      </div>
+      <table>
+        <tr>
+          <th>Item</th>
+          <th>Cost</th>
+          <th>Assessed By</th>
+          <th>Actions</th>
+        </tr>
+        {% for charge in charges %}
+          <tr>
+            <td>{{ charge.Item }}</td>
+            <td>{{ charge.Cost }}</td>
+            <td>{{ charge.AssessedBy.Name }}</td>
+            <td>
+              <div class="flex-container flex-row flex-center">
+                <form method="post" action="/ui/admin/accounts/{{ account.ID }}/cancel-charge/{{ charge.ID }}">
+                  <input type="submit" value="Cancel" class="flex-item button" />
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4">No Additional Charges</td>
+          </tr>
+        {% endfor %}
+      </table>
+      <br />
+      <hr />
+      <br />
+
       <p>Premises</p>
       <div class="flex-container flex-row flex-center">
         <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/manage-premises">Assign</a>

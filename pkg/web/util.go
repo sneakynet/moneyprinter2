@@ -35,9 +35,13 @@ func (s *Server) csvToMap(reader io.Reader) []map[string]string {
 }
 
 func (s *Server) strToUint(st string) uint {
+	return uint(s.strToInt(st))
+}
+
+func (s *Server) strToInt(st string) int {
 	int, err := strconv.Atoi(st)
 	if err != nil {
 		return 0
 	}
-	return uint(int)
+	return int
 }

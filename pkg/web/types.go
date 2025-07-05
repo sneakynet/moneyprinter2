@@ -84,4 +84,8 @@ type DB interface {
 
 	CDRSave(*types.CDR) (uint, error)
 	CDRList(*types.CDR) ([]types.CDR, error)
+
+	ChargeSave(*types.Charge) (uint, error)
+	ChargeList(*types.Charge) ([]types.Charge, error)
+	ChargeDelete(*types.Charge) error
 }
