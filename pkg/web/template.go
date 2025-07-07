@@ -8,6 +8,8 @@ import (
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/leekchan/accounting"
+
+	"github.com/the-maldridge/authware"
 )
 
 //go:embed ui
@@ -21,6 +23,12 @@ func (s *Server) doTemplate(w http.ResponseWriter, r *http.Request, tmpl string,
 	if ctx == nil {
 		ctx = pongo2.Context{}
 	}
+
+	if user := r.Context().Value(authware.UserKey{}); user != nil {
+		user = user.(authware.User)
+		ctx["user"] = user
+	}
+
 	t, err := s.tpl.FromCache(tmpl)
 	if err != nil {
 		s.templateErrorHandler(w, err)
