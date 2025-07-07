@@ -3,6 +3,7 @@
     <span id="logomark">MoneyPrinter</span>
   </div>
   <div class="flex-item flex-max">
+    {% if user %}
     <nav>
       <div class="nav-container">
         <div class="nav-header">Accounts</div>
@@ -48,8 +49,13 @@
         </div>
       </div>
     </nav>
+    {% endif %}
   </div>
   <div class="flex-item">
-    Login
+    {% if user %}
+      <a href="/logout" style="text-decoration: none; color: black;">Logout ({{ user.Identity }})</a>
+    {% else %}
+      <a href="/login">Login</a>
+    {% endif %}
   </div>
 </div>

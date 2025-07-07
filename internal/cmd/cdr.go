@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -59,9 +60,13 @@ func cdrCmdRun(c *cobra.Command, args []string) {
 		slog.Info("record", "number", i, "from", r.CLID, "to", r.DNIS, "duration", r.End.Sub(r.Start))
 
 		if !skipUpload {
+			cl := http.Client{Timeout: time.Second * 10}
+
 			buf := new(bytes.Buffer)
 			json.NewEncoder(buf).Encode(r)
-			resp, err := http.Post("http://"+mpAddr+"/api/admin/usage/cdr/ingest", "application/json", buf)
+			req, _ := http.NewRequest(http.MethodPost, "http://"+mpAddr+"/api/admin/usage/cdr/ingest", buf)
+			req.SetBasicAuth(os.Getenv("MP_USERNAME"), os.Getenv("MP_PASSWORD"))
+			resp, err := cl.Do(req)
 			if err != nil {
 				slog.Error("Error uploading CDR", "error", err)
 				continue
