@@ -10,6 +10,12 @@ import (
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"github.com/the-maldridge/authware"
+
+	// Pull in the backends so they register
+	_ "github.com/the-maldridge/authware/backend/htpasswd"
+	_ "github.com/the-maldridge/authware/backend/netauth"
 )
 
 // New returns a ready to serve webserver.
@@ -17,6 +23,12 @@ func New(opts ...Option) (*Server, error) {
 	s := new(Server)
 	s.r = chi.NewRouter()
 	s.n = new(http.Server)
+
+	auth, err := authware.NewAuth()
+	if err != nil {
+		slog.Warn("Could not initialize auth")
+		return nil, err
+	}
 
 	pongo2.RegisterFilter("key", s.filterGetValueByKey)
 	pongo2.RegisterFilter("formatMoney", s.filterFormatMoney)
@@ -43,8 +55,11 @@ func New(opts ...Option) (*Server, error) {
 
 	s.r.Get("/", s.landing)
 	s.r.Get("/login", s.login)
+	s.r.Post("/login", auth.LoginFormHandler("username", "password", "/ui/admin/"))
+	s.r.Get("/logout", auth.LogoutHandler("/"))
 
 	s.r.Route("/api/admin", func(a chi.Router) {
+		a.Use(auth.BasicHandler)
 		a.Route("/usage", func(r chi.Router) {
 			r.Route("/cdr", func(r chi.Router) {
 				r.Post("/ingest", s.apiCDRIngest)
@@ -53,6 +68,10 @@ func New(opts ...Option) (*Server, error) {
 	})
 
 	s.r.Route("/ui/admin", func(a chi.Router) {
+		a.Use(auth.LoginHandler("/login"))
+		// This needs to exist inside the protected path so
+		// that templating populates the bar.
+		a.Get("/", s.landing)
 		a.Route("/accounts", func(r chi.Router) {
 			r.Get("/", s.uiViewAccountList)
 			r.Get("/{id}", s.uiViewAccountDetail)
