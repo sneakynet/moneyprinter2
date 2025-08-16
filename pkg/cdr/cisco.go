@@ -209,7 +209,7 @@ func (c *Cisco) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 
 		out = append(out, types.CDR{
 			CLLI:    clli,
-			OrigID:  cdr.CallID,
+			OrigID:  uint64(cdr.CallID),
 			LogTime: cdr.UnixTime,
 			CLID:    cdr.CLID,
 			DNIS:    cdr.DNIS,

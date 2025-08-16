@@ -15,7 +15,7 @@ type CDR struct {
 
 	ID uint
 
-	OrigID  uint `gorm:"unique"`
+	OrigID  uint64 `gorm:"unique"`
 	LogTime time.Time
 	CLLI    string
 

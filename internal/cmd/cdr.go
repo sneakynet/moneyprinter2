@@ -45,6 +45,8 @@ func cdrCmdRun(c *cobra.Command, args []string) {
 	switch args[1] {
 	case "cisco":
 		parser = new(cdr.Cisco)
+	case "meridian":
+		parser = new(cdr.Meridian)
 	default:
 		slog.Error("Invalid CDR type; valid options are 'cisco'")
 		return

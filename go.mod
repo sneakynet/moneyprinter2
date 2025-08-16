@@ -6,6 +6,7 @@ require github.com/spf13/cobra v1.9.1
 
 require (
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
+	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/expr-lang/expr v1.17.5 // indirect
 	github.com/flosch/pongo2/v6 v6.0.0 // indirect
