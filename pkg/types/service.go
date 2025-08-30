@@ -32,5 +32,5 @@ func (s Service) DNList() string {
 	for _, dn := range s.AssignedDN {
 		dns = append(dns, dn.Number)
 	}
-	return strings.Join(dns, ",")
+	return strings.Join(dns, ", ")
 }
