@@ -163,7 +163,11 @@ func (m *Meridian) parseDur(d string) time.Duration {
 func (m *Meridian) doARSTranslations(s string) string {
 	ret := s
 
-	translations := strings.Split(os.Getenv("M1_ARS_TRANSLATIONS"), ";")
+	t := os.Getenv("M1_ARS_TRANSLATIONS")
+	if t == "" {
+		return s
+	}
+	translations := strings.Split(t, ";")
 	for _, tr := range translations {
 		parts := strings.Split(tr, "|")
 		r := regexp.MustCompile(parts[0])
