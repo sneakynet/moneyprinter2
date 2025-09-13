@@ -52,7 +52,7 @@ type CiscoCDR struct {
 	UnixTime time.Time
 
 	// Value of the Call-ID header.
-	CallID uint
+	CallID string
 
 	// Template used:
 	// 0=None
@@ -177,7 +177,7 @@ func (c *Cisco) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 
 		cdr := CiscoCDR{
 			UnixTime:            time.Unix(int64(strToUint(record[0])), 0),
-			CallID:              strToUint(record[1]),
+			CallID:              record[1],
 			Type:                strToUint(record[2]),
 			LegType:             CiscoLegType(strToUint(record[3])),
 			H323ConfID:          record[4],
@@ -209,7 +209,7 @@ func (c *Cisco) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 
 		out = append(out, types.CDR{
 			CLLI:    clli,
-			OrigID:  uint64(cdr.CallID),
+			OrigID:  cdr.CallID,
 			LogTime: cdr.UnixTime,
 			CLID:    cdr.CLID,
 			DNIS:    cdr.DNIS,

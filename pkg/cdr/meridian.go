@@ -89,7 +89,7 @@ func (m *Meridian) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 				slog.Warn("Dropping malformed CDR", "cdr", line, "len", len(matches))
 				continue
 			}
-			cdr.OrigID = xxhash.Sum64String(line)
+			cdr.OrigID = fmt.Sprintf("%X", xxhash.Sum64String(line))
 			cdr.LogTime = m.parseDate(matches[7])
 			cdr.Start = m.parseDate(matches[6])
 			cdr.End = m.parseDate(matches[6]).Add(m.parseDur(matches[7]))
@@ -126,7 +126,7 @@ func (m *Meridian) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 				slog.Warn("Dropping malformed CDR", "cdr", line)
 				continue
 			}
-			cdr.OrigID = xxhash.Sum64String(line)
+			cdr.OrigID = fmt.Sprintf("%X", xxhash.Sum64String(line))
 			cdr.LogTime = m.parseDate(matches[5])
 			cdr.CLID = matches[4]
 			cdr.DNIS = matches[5]
