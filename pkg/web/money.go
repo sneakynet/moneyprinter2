@@ -183,7 +183,7 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 		}
 		s.formatBillsText(w, bills, int(width))
 	default:
-		s.formatBillsHTML(w, bills)
+		s.formatBillsHTML(w, r, bills)
 	}
 }
 
@@ -229,7 +229,7 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 		}
 		s.formatBillsText(w, []billing.Bill{bill}, int(width))
 	default:
-		s.formatBillsHTML(w, []billing.Bill{bill})
+		s.formatBillsHTML(w, r, []billing.Bill{bill})
 	}
 }
 
@@ -295,7 +295,7 @@ func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, wi
 	}
 }
 
-func (s *Server) formatBillsHTML(w http.ResponseWriter, bills []billing.Bill) {
+func (s *Server) formatBillsHTML(w http.ResponseWriter, r *http.Request, bills []billing.Bill) {
 	ctx := pongo2.Context{"bills": bills}
-	s.doTemplate(w, nil, "views/bill/bills.p2", ctx)
+	s.doTemplate(w, r, "views/bill/bills.p2", ctx)
 }
