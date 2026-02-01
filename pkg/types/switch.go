@@ -53,6 +53,6 @@ type DN struct {
 	gorm.Model
 
 	ID     uint
-	Number string
+	Number string `gorm:"unique"`
 	CNAM   string
 }
