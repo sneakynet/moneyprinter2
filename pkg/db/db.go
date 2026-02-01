@@ -1,8 +1,11 @@
 package db
 
 import (
+	"context"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
@@ -53,4 +56,11 @@ func (db *DB) Migrate() error {
 // wrapped queries are insufficient.
 func (db *DB) Raw() *gorm.DB {
 	return db.d
+}
+
+func InsertOrUpdate[T any](ctx context.Context, db *gorm.DB, data *T) error {
+	err := gorm.G[T](db, clause.OnConflict{
+		UpdateAll: true,
+	}).Create(ctx, data)
+	return err
 }

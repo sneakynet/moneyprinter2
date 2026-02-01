@@ -1,6 +1,7 @@
 package web
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/flosch/pongo2/v6"
@@ -23,69 +24,69 @@ type Option func(*Server)
 
 // DB sets the specific calls that the web layer will make.
 type DB interface {
-	AccountSave(*types.Account) (uint, error)
-	AccountList(*types.Account) ([]types.Account, error)
-	AccountGet(*types.Account) (types.Account, error)
+	AccountSave(context.Context, *types.Account) (uint, error)
+	AccountList(context.Context, *types.Account) ([]types.Account, error)
+	AccountGet(context.Context, *types.Account) (types.Account, error)
 
-	WirecenterList(*types.Wirecenter) ([]types.Wirecenter, error)
-	WirecenterGet(*types.Wirecenter) (types.Wirecenter, error)
-	WirecenterDelete(*types.Wirecenter) error
-	WirecenterSave(*types.Wirecenter) (uint, error)
+	WirecenterList(context.Context, *types.Wirecenter) ([]types.Wirecenter, error)
+	WirecenterGet(context.Context, *types.Wirecenter) (types.Wirecenter, error)
+	WirecenterDelete(context.Context, *types.Wirecenter) error
+	WirecenterSave(context.Context, *types.Wirecenter) (uint, error)
 
-	PremiseSave(*types.Premise) (uint, error)
-	PremiseList(*types.Premise) ([]types.Premise, error)
-	PremiseDelete(*types.Premise) error
+	PremiseSave(context.Context, *types.Premise) (uint, error)
+	PremiseList(context.Context, *types.Premise) ([]types.Premise, error)
+	PremiseDelete(context.Context, *types.Premise) error
 
-	LECSave(*types.LEC) (uint, error)
-	LECList(*types.LEC) ([]types.LEC, error)
-	LECDelete(*types.LEC) error
+	LECSave(context.Context, *types.LEC) (uint, error)
+	LECList(context.Context, *types.LEC) ([]types.LEC, error)
+	LECDelete(context.Context, *types.LEC) error
 
-	LECServiceSave(*types.LECService) (uint, error)
-	LECServiceList(*types.LECService) ([]types.LECService, error)
-	LECServiceDelete(*types.LECService) error
+	LECServiceSave(context.Context, *types.LECService) (uint, error)
+	LECServiceList(context.Context, *types.LECService) ([]types.LECService, error)
+	LECServiceDelete(context.Context, *types.LECService) error
 
-	SwitchSave(*types.Switch) (uint, error)
-	SwitchList(*types.Switch) ([]types.Switch, error)
-	SwitchDelete(*types.Switch) error
+	SwitchSave(context.Context, *types.Switch) (uint, error)
+	SwitchList(context.Context, *types.Switch) ([]types.Switch, error)
+	SwitchDelete(context.Context, *types.Switch) error
 
-	EquipmentSave(*types.Equipment) (uint, error)
-	EquipmentList(*types.Equipment) ([]types.Equipment, error)
-	EquipmentDelete(*types.Equipment) error
+	EquipmentSave(context.Context, *types.Equipment) (uint, error)
+	EquipmentList(context.Context, *types.Equipment) ([]types.Equipment, error)
+	EquipmentDelete(context.Context, *types.Equipment) error
 
-	DNSave(*types.DN) (uint, error)
-	DNList(*types.DN) ([]types.DN, error)
-	DNListAvailable() ([]types.DN, error)
-	DNListAssigned() ([]types.DN, error)
-	DNDelete(*types.DN) error
+	DNSave(context.Context, *types.DN) (uint, error)
+	DNList(context.Context, *types.DN) ([]types.DN, error)
+	DNListAvailable(context.Context) ([]types.DN, error)
+	DNListAssigned(context.Context) ([]types.DN, error)
+	DNDelete(context.Context, *types.DN) error
 
-	PortSave(*types.Port) (uint, error)
-	PortList(*types.Port) ([]types.Port, error)
-	PortListAvailable() ([]types.Port, error)
-	PortListAssigned() ([]types.Port, error)
-	PortDelete(*types.Port) error
+	PortSave(context.Context, *types.Port) (uint, error)
+	PortList(context.Context, *types.Port) ([]types.Port, error)
+	PortListAvailable(context.Context) ([]types.Port, error)
+	PortListAssigned(context.Context) ([]types.Port, error)
+	PortDelete(context.Context, *types.Port) error
 
-	NIDSave(*types.NID) (uint, error)
-	NIDList(*types.NID) ([]types.NID, error)
-	NIDListFull(*types.NID) ([]types.NID, error)
-	NIDDelete(*types.NID) error
+	NIDSave(context.Context, *types.NID) (uint, error)
+	NIDList(context.Context, *types.NID) ([]types.NID, error)
+	NIDListFull(context.Context, *types.NID) ([]types.NID, error)
+	NIDDelete(context.Context, *types.NID) error
 
-	NIDPortSave(*types.NIDPort) (uint, error)
-	NIDPortAssociateService(*types.NIDPort, []types.Service) error
+	NIDPortSave(context.Context, *types.NIDPort) (uint, error)
+	NIDPortAssociateService(context.Context, *types.NIDPort, []types.Service) error
 
-	ServiceSave(*types.Service) (uint, error)
-	ServiceList(*types.Service) ([]types.Service, error)
-	ServiceListFull(*types.Service) ([]types.Service, error)
-	ServiceDelete(*types.Service) error
-	ServiceAssociateDN(*types.Service, []types.DN) error
+	ServiceSave(context.Context, *types.Service) (uint, error)
+	ServiceList(context.Context, *types.Service) ([]types.Service, error)
+	ServiceListFull(context.Context, *types.Service) ([]types.Service, error)
+	ServiceDelete(context.Context, *types.Service) error
+	ServiceAssociateDN(context.Context, *types.Service, []types.DN) error
 
-	FeeSave(*types.Fee) (uint, error)
-	FeeList(*types.Fee) ([]types.Fee, error)
-	FeeDelete(*types.Fee) error
+	FeeSave(context.Context, *types.Fee) (uint, error)
+	FeeList(context.Context, *types.Fee) ([]types.Fee, error)
+	FeeDelete(context.Context, *types.Fee) error
 
-	CDRSave(*types.CDR) (uint, error)
-	CDRList(*types.CDR) ([]types.CDR, error)
+	CDRSave(context.Context, *types.CDR) (uint, error)
+	CDRList(context.Context, *types.CDR) ([]types.CDR, error)
 
-	ChargeSave(*types.Charge) (uint, error)
-	ChargeList(*types.Charge) ([]types.Charge, error)
-	ChargeDelete(*types.Charge) error
+	ChargeSave(context.Context, *types.Charge) (uint, error)
+	ChargeList(context.Context, *types.Charge) ([]types.Charge, error)
+	ChargeDelete(context.Context, *types.Charge) error
 }

@@ -16,7 +16,7 @@ import (
 //////////////
 
 func (s *Server) uiViewSwitchList(w http.ResponseWriter, r *http.Request) {
-	switches, err := s.d.SwitchList(nil)
+	switches, err := s.d.SwitchList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -25,7 +25,7 @@ func (s *Server) uiViewSwitchList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewSwitchDetail(w http.ResponseWriter, r *http.Request) {
-	switches, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	switches, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -34,7 +34,7 @@ func (s *Server) uiViewSwitchDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewSwitchFormSingle(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -44,13 +44,13 @@ func (s *Server) uiViewSwitchFormSingle(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) uiViewSwitchEdit(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	switches, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	switches, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -79,7 +79,7 @@ func (s *Server) uiViewSwitchUpsert(w http.ResponseWriter, r *http.Request) {
 		ConfigTemplate: r.FormValue("switch_config"),
 	}
 
-	id, err := s.d.SwitchSave(&sw)
+	id, err := s.d.SwitchSave(r.Context(), &sw)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -89,7 +89,7 @@ func (s *Server) uiViewSwitchUpsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewSwitchDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.SwitchDelete(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.SwitchDelete(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -97,14 +97,14 @@ func (s *Server) uiViewSwitchDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewSwitchConfig(w http.ResponseWriter, r *http.Request) {
-	sw, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	sw, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
 	svcs := []types.Service{}
-	svcsOrig, err := s.d.ServiceListFull(nil)
+	svcsOrig, err := s.d.ServiceListFull(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -139,7 +139,7 @@ func (s *Server) uiViewSwitchConfig(w http.ResponseWriter, r *http.Request) {
 func (s *Server) uiViewEquipmentList(w http.ResponseWriter, r *http.Request) {
 	filter := &types.Equipment{}
 
-	switches, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	switches, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -149,7 +149,7 @@ func (s *Server) uiViewEquipmentList(w http.ResponseWriter, r *http.Request) {
 		filter.SwitchID = switches[0].ID
 	}
 
-	equipment, err := s.d.EquipmentList(filter)
+	equipment, err := s.d.EquipmentList(r.Context(), filter)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -163,7 +163,7 @@ func (s *Server) uiViewEquipmentList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewEquipmentDetail(w http.ResponseWriter, r *http.Request) {
-	equipment, err := s.d.EquipmentList(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
+	equipment, err := s.d.EquipmentList(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -172,17 +172,17 @@ func (s *Server) uiViewEquipmentDetail(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewEquipmentEdit(w http.ResponseWriter, r *http.Request) {
-	equipment, err := s.d.EquipmentList(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
+	equipment, err := s.d.EquipmentList(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
-	switches, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	switches, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -196,12 +196,12 @@ func (s *Server) uiViewEquipmentEdit(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewEquipmentFormSingle(w http.ResponseWriter, r *http.Request) {
-	switches, err := s.d.SwitchList(&types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
+	switches, err := s.d.SwitchList(r.Context(), &types.Switch{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -227,7 +227,7 @@ func (s *Server) uiViewEquipmentUpsert(w http.ResponseWriter, r *http.Request) {
 		Type:         r.FormValue("equipment_type"),
 	}
 
-	_, err := s.d.EquipmentSave(&equipment)
+	_, err := s.d.EquipmentSave(r.Context(), &equipment)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -237,7 +237,7 @@ func (s *Server) uiViewEquipmentUpsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewEquipmentDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.EquipmentDelete(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))}); err != nil {
+	if err := s.d.EquipmentDelete(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -249,13 +249,13 @@ func (s *Server) uiViewEquipmentDelete(w http.ResponseWriter, r *http.Request) {
 ///////////
 
 func (s *Server) uiViewPortList(w http.ResponseWriter, r *http.Request) {
-	equipment, err := s.d.EquipmentList(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
+	equipment, err := s.d.EquipmentList(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	ports, err := s.d.PortList(&types.Port{EquipmentID: equipment[0].ID})
+	ports, err := s.d.PortList(r.Context(), &types.Port{EquipmentID: equipment[0].ID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -269,7 +269,7 @@ func (s *Server) uiViewPortList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewPortEdit(w http.ResponseWriter, r *http.Request) {
-	ports, err := s.d.PortList(&types.Port{ID: s.strToUint(chi.URLParam(r, "pid"))})
+	ports, err := s.d.PortList(r.Context(), &types.Port{ID: s.strToUint(chi.URLParam(r, "pid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -290,7 +290,7 @@ func (s *Server) uiViewPortUpsert(w http.ResponseWriter, r *http.Request) {
 		EquipmentID: s.strToUint(chi.URLParam(r, "eid")),
 	}
 
-	if _, err := s.d.PortSave(&port); err != nil {
+	if _, err := s.d.PortSave(r.Context(), &port); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -298,7 +298,7 @@ func (s *Server) uiViewPortUpsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewPortFormSingle(w http.ResponseWriter, r *http.Request) {
-	equipment, err := s.d.EquipmentList(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
+	equipment, err := s.d.EquipmentList(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -307,7 +307,7 @@ func (s *Server) uiViewPortFormSingle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewPortFormBulk(w http.ResponseWriter, r *http.Request) {
-	equipment, err := s.d.EquipmentList(&types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
+	equipment, err := s.d.EquipmentList(r.Context(), &types.Equipment{ID: s.strToUint(chi.URLParam(r, "eid"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -340,7 +340,7 @@ func (s *Server) uiViewPortFormBulkSubmit(w http.ResponseWriter, r *http.Request
 			EquipmentID: s.strToUint(chi.URLParam(r, "eid")),
 		}
 
-		if _, err := s.d.PortSave(&port); err != nil {
+		if _, err := s.d.PortSave(r.Context(), &port); err != nil {
 			s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 			return
 		}
@@ -349,7 +349,7 @@ func (s *Server) uiViewPortFormBulkSubmit(w http.ResponseWriter, r *http.Request
 }
 
 func (s *Server) uiViewPortDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.PortDelete(&types.Port{ID: s.strToUint(chi.URLParam(r, "pid"))}); err != nil {
+	if err := s.d.PortDelete(r.Context(), &types.Port{ID: s.strToUint(chi.URLParam(r, "pid"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -361,7 +361,7 @@ func (s *Server) uiViewPortDelete(w http.ResponseWriter, r *http.Request) {
 ////////
 
 func (s *Server) uiViewDNList(w http.ResponseWriter, r *http.Request) {
-	dnList, err := s.d.DNList(nil)
+	dnList, err := s.d.DNList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -370,7 +370,7 @@ func (s *Server) uiViewDNList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewDNEdit(w http.ResponseWriter, r *http.Request) {
-	dnList, err := s.d.DNList(&types.DN{ID: s.strToUint(chi.URLParam(r, "id"))})
+	dnList, err := s.d.DNList(r.Context(), &types.DN{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -390,7 +390,7 @@ func (s *Server) uiViewDNUpsert(w http.ResponseWriter, r *http.Request) {
 		CNAM:   r.FormValue("dn_cnam"),
 	}
 
-	if _, err := s.d.DNSave(&dn); err != nil {
+	if _, err := s.d.DNSave(r.Context(), &dn); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -413,7 +413,7 @@ func (s *Server) uiViewDNFormBulkSubmit(w http.ResponseWriter, r *http.Request) 
 
 	base := s.strToUint(r.FormValue("dn_base"))
 	for i := range s.strToUint(r.FormValue("dn_count")) {
-		if _, err := s.d.DNSave(&types.DN{Number: strconv.Itoa(int(base + i))}); err != nil {
+		if _, err := s.d.DNSave(r.Context(), &types.DN{Number: strconv.Itoa(int(base + i))}); err != nil {
 			s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 			return
 		}
@@ -423,7 +423,7 @@ func (s *Server) uiViewDNFormBulkSubmit(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) uiViewDNDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.DNDelete(&types.DN{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.DNDelete(r.Context(), &types.DN{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) uiViewNIDProvisionForm(w http.ResponseWriter, r *http.Request) {
-	premises, err := s.d.PremiseList(&types.Premise{AccountID: s.strToUint(r.URL.Query().Get("account"))})
+	premises, err := s.d.PremiseList(r.Context(), &types.Premise{AccountID: s.strToUint(r.URL.Query().Get("account"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (s *Server) uiViewNIDProvision(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	premise, err := s.d.PremiseList(&types.Premise{ID: s.strToUint(r.FormValue("nid_premise"))})
+	premise, err := s.d.PremiseList(r.Context(), &types.Premise{ID: s.strToUint(r.FormValue("nid_premise"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -48,7 +48,7 @@ func (s *Server) uiViewNIDProvision(w http.ResponseWriter, r *http.Request) {
 		CLLI:      premise[0].Wirecenter.Name + premise[0].Address + r.URL.Query().Get("account"),
 	}
 
-	if _, err := s.d.NIDSave(&NID); err != nil {
+	if _, err := s.d.NIDSave(r.Context(), &NID); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -57,7 +57,7 @@ func (s *Server) uiViewNIDProvision(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewNIDDeprovision(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.NIDDelete(&types.NID{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.NIDDelete(r.Context(), &types.NID{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -70,13 +70,13 @@ func (s *Server) uiViewNIDDeprovision(w http.ResponseWriter, r *http.Request) {
 ///////////////
 
 func (s *Server) uiViewNIDPortProvisionForm(w http.ResponseWriter, r *http.Request) {
-	nidList, err := s.d.NIDList(&types.NID{ID: s.strToUint(chi.URLParam(r, "id"))})
+	nidList, err := s.d.NIDList(r.Context(), &types.NID{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	account, err := s.d.AccountGet(&types.Account{ID: nidList[0].AccountID})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: nidList[0].AccountID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -102,7 +102,7 @@ func (s *Server) uiViewNIDPortProvision(w http.ResponseWriter, r *http.Request) 
 		NIDID: s.strToUint(chi.URLParam(r, "id")),
 	}
 
-	if _, err := s.d.NIDPortSave(&nidPort); err != nil {
+	if _, err := s.d.NIDPortSave(r.Context(), &nidPort); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -112,7 +112,7 @@ func (s *Server) uiViewNIDPortProvision(w http.ResponseWriter, r *http.Request) 
 		svcs = append(svcs, types.Service{ID: s.strToUint(svcID)})
 	}
 
-	if err := s.d.NIDPortAssociateService(&nidPort, svcs); err != nil {
+	if err := s.d.NIDPortAssociateService(r.Context(), &nidPort, svcs); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -124,7 +124,7 @@ func (s *Server) uiViewNIDPortDeprovision(w http.ResponseWriter, r *http.Request
 		ID: s.strToUint(chi.URLParam(r, "pid")),
 	}
 
-	if err := s.d.NIDPortAssociateService(&nidPort, []types.Service{}); err != nil {
+	if err := s.d.NIDPortAssociateService(r.Context(), &nidPort, []types.Service{}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func (s *Server) uiViewLECList(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -19,7 +19,7 @@ func (s *Server) uiViewLECList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewLECDetail(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -32,7 +32,7 @@ func (s *Server) uiViewLECFormSingle(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewLECEdit(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -55,7 +55,7 @@ func (s *Server) uiViewLECUpsert(w http.ResponseWriter, r *http.Request) {
 		Website: r.FormValue("lec_website"),
 	}
 
-	_, err := s.d.LECSave(&sw)
+	_, err := s.d.LECSave(r.Context(), &sw)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -65,7 +65,7 @@ func (s *Server) uiViewLECUpsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewLECServiceList(w http.ResponseWriter, r *http.Request) {
-	svcs, err := s.d.LECServiceList(nil)
+	svcs, err := s.d.LECServiceList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -74,7 +74,7 @@ func (s *Server) uiViewLECServiceList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewLECServiceFormSingle(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -84,13 +84,13 @@ func (s *Server) uiViewLECServiceFormSingle(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) uiViewLECServiceEdit(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	svcs, err := s.d.LECServiceList(&types.LECService{ID: s.strToUint(chi.URLParam(r, "id"))})
+	svcs, err := s.d.LECServiceList(r.Context(), &types.LECService{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -113,7 +113,7 @@ func (s *Server) uiViewLECServiceUpsert(w http.ResponseWriter, r *http.Request) 
 		LECID:       s.strToUint(r.FormValue("service_lec")),
 	}
 
-	if _, err := s.d.LECServiceSave(&svc); err != nil {
+	if _, err := s.d.LECServiceSave(r.Context(), &svc); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

@@ -1,6 +1,7 @@
 package billing
 
 import (
+	"context"
 	"fmt"
 	"log/slog"
 
@@ -22,8 +23,8 @@ func NewProcessor(opts ...ProcessorOption) *Processor {
 // Preload fetches a bunch of information from the database so that we
 // can run multiple bills without needing to re-fetch this
 // information.
-func (p *Processor) Preload(lec types.LEC) error {
-	srcFees, err := p.db.FeeList(&types.Fee{LECReferer: lec.ID})
+func (p *Processor) Preload(ctx context.Context, lec types.LEC) error {
+	srcFees, err := p.db.FeeList(ctx, &types.Fee{LECReferer: lec.ID})
 	if err != nil {
 		slog.Error("Error preloading billing information", "error", err)
 		return err
@@ -46,7 +47,7 @@ func (p *Processor) Preload(lec types.LEC) error {
 // an account.  WARNING: This fetches a lot of data to work out what
 // services the account has and has consumed, and what it needs to be
 // charged for.
-func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
+func (p *Processor) BillAccount(ctx context.Context, ac types.Account, lec types.LEC) (Bill, error) {
 	slog.Debug("Billing Account", "account", ac.ID, "lec", lec.ID)
 	b := Bill{
 		Account: ac,
@@ -65,7 +66,7 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 		b.Lines = append(b.Lines, l)
 	}
 
-	charges, err := p.db.ChargeList(&types.Charge{AccountID: ac.ID})
+	charges, err := p.db.ChargeList(ctx, &types.Charge{AccountID: ac.ID})
 	if err != nil {
 		slog.Warn("Error pulling account specific charges", "error", err)
 	}
@@ -78,7 +79,7 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 	// the NID is owned by the ILEC, but presumably the CLEC is
 	// being charged for use of the NID, so this is a freebie cost
 	// passthrough.
-	nids, err := p.db.NIDList(&types.NID{AccountID: ac.ID})
+	nids, err := p.db.NIDList(ctx, &types.NID{AccountID: ac.ID})
 	if err != nil {
 		slog.Error("Error loading NIDs for account", "account-id", ac.ID, "error", err)
 		return Bill{}, err
@@ -120,7 +121,7 @@ func (p *Processor) BillAccount(ac types.Account, lec types.LEC) (Bill, error) {
 		// Usage based charges go here.
 		for _, dn := range svc.AssignedDN {
 			slog.Debug("Billing for DN on service", "dn", dn.Number, "service", svc.LECService.Slug, "account", ac.ID)
-			cdrs, err := p.db.CDRList(&types.CDR{CLID: dn.Number})
+			cdrs, err := p.db.CDRList(ctx, &types.CDR{CLID: dn.Number})
 			if err != nil {
 				slog.Error("Error retreiving CDRs to bill", "account", ac.ID, "dn", dn.Number, "error", err)
 				return Bill{}, err

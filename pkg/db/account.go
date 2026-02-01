@@ -1,27 +1,38 @@
 package db
 
 import (
-	"gorm.io/gorm/clause"
+	"context"
+
+	"gorm.io/gorm"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
 
 // AccountSave creates a new account within the system.
-func (db *DB) AccountSave(a *types.Account) (uint, error) {
-	return a.ID, db.d.Save(a).Error
+func (db *DB) AccountSave(ctx context.Context, a *types.Account) (uint, error) {
+	return a.ID, InsertOrUpdate(ctx, db.d, a)
 }
 
 // AccountList provides a listing of all accounts in the system.  This
 // is not paginated and is one of the limiting points in the system.
-func (db *DB) AccountList(filter *types.Account) ([]types.Account, error) {
-	accounts := []types.Account{}
-	res := db.d.Where(filter).Find(&accounts)
-	return accounts, res.Error
+func (db *DB) AccountList(ctx context.Context, filter *types.Account) ([]types.Account, error) {
+	accounts, err := gorm.G[types.Account](db.d).
+		Where(filter).
+		Find(ctx)
+	return accounts, err
 }
 
 // AccountGet returns a single account identified by its specific ID
-func (db *DB) AccountGet(filter *types.Account) (types.Account, error) {
-	acct := types.Account{}
-	res := db.d.Where(filter).Preload("Premises.Wirecenter").Preload("Services.LECService").Preload("Services.LECService.LEC").Preload("Services.AssignedDN").Preload("Services.EquipmentPort").Preload(clause.Associations).First(&acct)
-	return acct, res.Error
+func (db *DB) AccountGet(ctx context.Context, filter *types.Account) (types.Account, error) {
+	acct, err := gorm.G[types.Account](db.d).
+		Where(filter).
+		Preload("Premises", nil).
+		Preload("Services", nil).
+		Preload("Premises.Wirecenter", nil).
+		Preload("Services.LECService", nil).
+		Preload("Services.LECService.LEC", nil).
+		Preload("Services.AssignedDN", nil).
+		Preload("Services.EquipmentPort", nil).
+		First(ctx)
+	return acct, err
 }

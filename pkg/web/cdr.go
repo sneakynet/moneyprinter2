@@ -19,7 +19,7 @@ func (s *Server) apiCDRIngest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := s.d.CDRSave(cdr)
+	id, err := s.d.CDRSave(r.Context(), cdr)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
@@ -41,17 +41,17 @@ func (s *Server) uiViewCDRList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if dnis := q.Get("dnis"); dnis != "" {
-		s1, _ := s.d.CDRList(&types.CDR{DNIS: dnis})
+		s1, _ := s.d.CDRList(r.Context(), &types.CDR{DNIS: dnis})
 		cdrs = append(cdrs, s1...)
 	}
 
 	if clid := q.Get("clid"); clid != "" {
-		s1, _ := s.d.CDRList(&types.CDR{CLID: clid})
+		s1, _ := s.d.CDRList(r.Context(), &types.CDR{CLID: clid})
 		cdrs = append(cdrs, s1...)
 	}
 
 	if clli := q.Get("ccli"); clli != "" {
-		s1, _ := s.d.CDRList(&types.CDR{CLLI: clli})
+		s1, _ := s.d.CDRList(r.Context(), &types.CDR{CLLI: clli})
 		cdrs = append(cdrs, s1...)
 	}
 

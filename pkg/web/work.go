@@ -19,7 +19,7 @@ func (s *Server) uiViewWorkPremises(w http.ResponseWriter, r *http.Request) {
 	}
 	workorders := []workOrder{}
 
-	nids, err := s.d.NIDListFull(&types.NID{})
+	nids, err := s.d.NIDListFull(r.Context(), &types.NID{})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -54,7 +54,7 @@ func (s *Server) uiViewWorkDirectory(w http.ResponseWriter, r *http.Request) {
 	}
 	directoryEntries := []directoryEntry{}
 
-	svcs, err := s.d.ServiceList(&types.Service{})
+	svcs, err := s.d.ServiceList(r.Context(), &types.Service{})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return

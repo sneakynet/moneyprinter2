@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) uiViewWirecenterList(w http.ResponseWriter, r *http.Request) {
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -20,7 +20,7 @@ func (s *Server) uiViewWirecenterList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewWirecenterDetail(w http.ResponseWriter, r *http.Request) {
-	wirecenter, err := s.d.WirecenterGet(&types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))})
+	wirecenter, err := s.d.WirecenterGet(r.Context(), &types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -39,7 +39,7 @@ func (s *Server) uiViewWirecenterUpsert(w http.ResponseWriter, r *http.Request) 
 		Name: r.FormValue("wirecenter_name"),
 	}
 
-	_, err := s.d.WirecenterSave(&sw)
+	_, err := s.d.WirecenterSave(r.Context(), &sw)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -53,7 +53,7 @@ func (s *Server) uiViewWirecenterFormCreate(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) uiViewWirecenterFormEdit(w http.ResponseWriter, r *http.Request) {
-	wc, err := s.d.WirecenterGet(&types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))})
+	wc, err := s.d.WirecenterGet(r.Context(), &types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -63,7 +63,7 @@ func (s *Server) uiViewWirecenterFormEdit(w http.ResponseWriter, r *http.Request
 }
 
 func (s *Server) uiViewWirecenterDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.WirecenterDelete(&types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.WirecenterDelete(r.Context(), &types.Wirecenter{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -71,7 +71,7 @@ func (s *Server) uiViewWirecenterDelete(w http.ResponseWriter, r *http.Request) 
 }
 
 func (s *Server) uiViewPremisesList(w http.ResponseWriter, r *http.Request) {
-	premises, err := s.d.PremiseList(nil)
+	premises, err := s.d.PremiseList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -80,7 +80,7 @@ func (s *Server) uiViewPremisesList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewPremisesFormSingle(w http.ResponseWriter, r *http.Request) {
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -101,7 +101,7 @@ func (s *Server) uiViewPremisesSubmitSingle(w http.ResponseWriter, r *http.Reque
 
 	slog.Debug("Want to create premise", "address", pAddress, "alias", pAlias, "wirecenter", pWirecenterID)
 
-	_, err := s.d.PremiseSave(&types.Premise{
+	_, err := s.d.PremiseSave(r.Context(), &types.Premise{
 		Address:      pAddress,
 		WirecenterID: pWirecenterID,
 	})
@@ -127,7 +127,7 @@ func (s *Server) uiViewPremisesSubmitBulk(w http.ResponseWriter, r *http.Request
 	defer f.Close()
 	records := s.csvToMap(f)
 
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -143,10 +143,10 @@ func (s *Server) uiViewPremisesSubmitBulk(w http.ResponseWriter, r *http.Request
 			continue
 		}
 
-		res, err := s.d.PremiseList(&types.Premise{Address: record["Address"]})
+		res, err := s.d.PremiseList(r.Context(), &types.Premise{Address: record["Address"]})
 		if len(res) == 0 {
 			slog.Info("Premise did not exist, creating", "address", record["Address"], "alias", record["Alias"], "wirecenter", wc[record["Wirecenter"]])
-			_, err = s.d.PremiseSave(&types.Premise{
+			_, err = s.d.PremiseSave(r.Context(), &types.Premise{
 				Address:      record["Address"],
 				WirecenterID: wc[record["Wirecenter"]],
 			})
@@ -161,7 +161,7 @@ func (s *Server) uiViewPremisesSubmitBulk(w http.ResponseWriter, r *http.Request
 }
 
 func (s *Server) uiViewPremiseDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.PremiseDelete(&types.Premise{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.PremiseDelete(r.Context(), &types.Premise{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

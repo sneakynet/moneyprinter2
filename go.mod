@@ -2,7 +2,11 @@ module github.com/sneakynet/moneyprinter2
 
 go 1.24.4
 
-require github.com/spf13/cobra v1.9.1
+require (
+	github.com/spf13/cobra v1.9.1
+	gorm.io/driver/sqlite v1.6.0
+	gorm.io/gorm v1.31.1
+)
 
 require (
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
@@ -42,11 +46,9 @@ require (
 	golang.org/x/crypto v0.37.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/text v0.24.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250324211829-b45e905df463 // indirect
 	google.golang.org/grpc v1.73.0 // indirect
 	google.golang.org/protobuf v1.36.6 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	gorm.io/driver/sqlite v1.5.7 // indirect
-	gorm.io/gorm v1.25.12 // indirect
 )

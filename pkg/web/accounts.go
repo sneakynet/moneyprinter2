@@ -12,7 +12,7 @@ import (
 )
 
 func (s *Server) uiViewAccountList(w http.ResponseWriter, r *http.Request) {
-	accounts, err := s.d.AccountList(nil)
+	accounts, err := s.d.AccountList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -22,19 +22,19 @@ func (s *Server) uiViewAccountList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewAccountDetail(w http.ResponseWriter, r *http.Request) {
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	NIDs, err := s.d.NIDListFull(&types.NID{AccountID: account.ID})
+	NIDs, err := s.d.NIDListFull(r.Context(), &types.NID{AccountID: account.ID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	charges, err := s.d.ChargeList(&types.Charge{AccountID: account.ID})
+	charges, err := s.d.ChargeList(r.Context(), &types.Charge{AccountID: account.ID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -57,7 +57,7 @@ func (s *Server) uiViewAccountFormBulk(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewAccountEdit(w http.ResponseWriter, r *http.Request) {
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -72,7 +72,7 @@ func (s *Server) uiAccountFormSubmitSingle(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	id, err := s.d.AccountSave(&types.Account{
+	id, err := s.d.AccountSave(r.Context(), &types.Account{
 		ID:       s.strToUint(chi.URLParam(r, "id")),
 		Name:     r.FormValue("account_name"),
 		Contact:  r.FormValue("account_contact"),
@@ -103,10 +103,10 @@ func (s *Server) uiAccountFormSubmitBulk(w http.ResponseWriter, r *http.Request)
 			continue
 		}
 
-		_, err := s.d.AccountGet(&types.Account{Name: record["Name"]})
+		_, err := s.d.AccountGet(r.Context(), &types.Account{Name: record["Name"]})
 		if err != nil {
 			slog.Warn("Error fetching account by name", "error", err)
-			_, err = s.d.AccountSave(&types.Account{
+			_, err = s.d.AccountSave(r.Context(), &types.Account{
 				Name:     record["Name"],
 				Contact:  record["Contact"],
 				Alias:    record["Alias"],
@@ -122,13 +122,13 @@ func (s *Server) uiAccountFormSubmitBulk(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) uiViewAccountPremiseForm(w http.ResponseWriter, r *http.Request) {
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	wirecenters, err := s.d.WirecenterList(nil)
+	wirecenters, err := s.d.WirecenterList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -143,7 +143,7 @@ func (s *Server) uiViewAccountPremiseForm(w http.ResponseWriter, r *http.Request
 }
 
 func (s *Server) uiViewAccountPremiseSubmit(w http.ResponseWriter, r *http.Request) {
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -155,7 +155,7 @@ func (s *Server) uiViewAccountPremiseSubmit(w http.ResponseWriter, r *http.Reque
 	}
 
 	for _, p := range r.Form["account_premises"] {
-		prem, err := s.d.PremiseList(&types.Premise{ID: s.strToUint(p)})
+		prem, err := s.d.PremiseList(r.Context(), &types.Premise{ID: s.strToUint(p)})
 		if err != nil {
 			s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 			return
@@ -163,7 +163,7 @@ func (s *Server) uiViewAccountPremiseSubmit(w http.ResponseWriter, r *http.Reque
 		prem[0].AccountID = account.ID
 		slog.Debug("Binding premise to account", "account", account.ID, "premise", prem[0].ID)
 
-		if _, err := s.d.PremiseSave(&prem[0]); err != nil {
+		if _, err := s.d.PremiseSave(r.Context(), &prem[0]); err != nil {
 			s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 			return
 		}
@@ -178,7 +178,7 @@ func (s *Server) uiViewAccountPremiseUnassign(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	premises, err := s.d.PremiseList(&types.Premise{ID: s.strToUint(r.FormValue("premise_id"))})
+	premises, err := s.d.PremiseList(r.Context(), &types.Premise{ID: s.strToUint(r.FormValue("premise_id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -187,7 +187,7 @@ func (s *Server) uiViewAccountPremiseUnassign(w http.ResponseWriter, r *http.Req
 	prem.AccountID = 0
 	prem.Account = types.Account{}
 	slog.Debug("Releasing premise", "premise", prem, "account", chi.URLParam(r, "id"))
-	if _, err := s.d.PremiseSave(&prem); err != nil {
+	if _, err := s.d.PremiseSave(r.Context(), &prem); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -195,13 +195,13 @@ func (s *Server) uiViewAccountPremiseUnassign(w http.ResponseWriter, r *http.Req
 }
 
 func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request) {
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	lecSvcs, err := s.d.LECServiceList(nil)
+	lecSvcs, err := s.d.LECServiceList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -222,25 +222,25 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 		}{lec, svc})
 	}
 
-	availDN, err := s.d.DNListAvailable()
+	availDN, err := s.d.DNListAvailable(r.Context())
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	usedDN, err := s.d.DNListAssigned()
+	usedDN, err := s.d.DNListAssigned(r.Context())
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	equipment, err := s.d.EquipmentList(nil)
+	equipment, err := s.d.EquipmentList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	assignedPorts, err := s.d.PortListAssigned()
+	assignedPorts, err := s.d.PortListAssigned(r.Context())
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -263,7 +263,7 @@ func (s *Server) uiViewAccountServiceForm(w http.ResponseWriter, r *http.Request
 	sid := s.strToUint(chi.URLParam(r, "sid"))
 	if sid != 0 {
 		slog.Debug("Querying for service orders", "sid", sid, "account", account.ID)
-		svcs, err := s.d.ServiceList(&types.Service{
+		svcs, err := s.d.ServiceList(r.Context(), &types.Service{
 			ID:        sid,
 			AccountID: account.ID,
 		})
@@ -297,7 +297,7 @@ func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Reque
 		EquipmentPortID: s.strToUint(r.FormValue("equipment_port_id")),
 	}
 
-	if _, err := s.d.ServiceSave(&svc); err != nil {
+	if _, err := s.d.ServiceSave(r.Context(), &svc); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -306,7 +306,7 @@ func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Reque
 	for _, dnID := range r.Form["assigned_dn"] {
 		dns = append(dns, types.DN{ID: s.strToUint(dnID)})
 	}
-	if err := s.d.ServiceAssociateDN(&svc, dns); err != nil {
+	if err := s.d.ServiceAssociateDN(r.Context(), &svc, dns); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -315,7 +315,7 @@ func (s *Server) uiViewAccountServiceUpsert(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) uiViewAccountServiceCancel(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.ServiceDelete(&types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))}); err != nil {
+	if err := s.d.ServiceDelete(r.Context(), &types.Service{ID: s.strToUint(chi.URLParam(r, "sid"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -326,7 +326,7 @@ func (s *Server) uiViewAccountServiceCancel(w http.ResponseWriter, r *http.Reque
 func (s *Server) uiViewAccountChargeForm(w http.ResponseWriter, r *http.Request) {
 	ctx := pongo2.Context{}
 
-	account, err := s.d.AccountGet(&types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -349,7 +349,7 @@ func (s *Server) uiViewAccountChargeUpsert(w http.ResponseWriter, r *http.Reques
 		Cost:       s.strToInt(r.FormValue("charge_cost")),
 	}
 
-	if _, err := s.d.ChargeSave(&charge); err != nil {
+	if _, err := s.d.ChargeSave(r.Context(), &charge); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -358,7 +358,7 @@ func (s *Server) uiViewAccountChargeUpsert(w http.ResponseWriter, r *http.Reques
 }
 
 func (s *Server) uiViewAccountChargeCancel(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.ChargeDelete(&types.Charge{ID: s.strToUint(chi.URLParam(r, "cid"))}); err != nil {
+	if err := s.d.ChargeDelete(r.Context(), &types.Charge{ID: s.strToUint(chi.URLParam(r, "cid"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

@@ -18,7 +18,7 @@ import (
 
 func (s *Server) uiViewFeeList(w http.ResponseWriter, r *http.Request) {
 	ctx := pongo2.Context{}
-	fees, err := s.d.FeeList(nil)
+	fees, err := s.d.FeeList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -30,7 +30,7 @@ func (s *Server) uiViewFeeList(w http.ResponseWriter, r *http.Request) {
 func (s *Server) uiViewFeeFormSingle(w http.ResponseWriter, r *http.Request) {
 	ctx := pongo2.Context{}
 
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -50,14 +50,14 @@ func (s *Server) uiViewFeeFormSingle(w http.ResponseWriter, r *http.Request) {
 func (s *Server) uiViewFeeEdit(w http.ResponseWriter, r *http.Request) {
 	ctx := pongo2.Context{}
 
-	fees, err := s.d.FeeList(&types.Fee{ID: s.strToUint(chi.URLParam(r, "id"))})
+	fees, err := s.d.FeeList(r.Context(), &types.Fee{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 	ctx["fee"] = fees[0]
 
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -88,7 +88,7 @@ func (s *Server) uiViewFeeUpsert(w http.ResponseWriter, r *http.Request) {
 		LECReferer: s.strToUint(r.FormValue("assessed_by")),
 	}
 
-	if _, err := s.d.FeeSave(&fee); err != nil {
+	if _, err := s.d.FeeSave(r.Context(), &fee); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -96,7 +96,7 @@ func (s *Server) uiViewFeeUpsert(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewFeeDelete(w http.ResponseWriter, r *http.Request) {
-	if err := s.d.FeeDelete(&types.Fee{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
+	if err := s.d.FeeDelete(r.Context(), &types.Fee{ID: s.strToUint(chi.URLParam(r, "id"))}); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -110,18 +110,18 @@ func (s *Server) uiViewFeeDelete(w http.ResponseWriter, r *http.Request) {
 func (s *Server) uiViewBillList(w http.ResponseWriter, r *http.Request) {
 	ctx := pongo2.Context{}
 
-	accounts, err := s.d.AccountList(nil)
+	accounts, err := s.d.AccountList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 	for i := range accounts {
 		// Fully hydrate the underlying account.
-		accounts[i], _ = s.d.AccountGet(&accounts[i])
+		accounts[i], _ = s.d.AccountGet(r.Context(), &accounts[i])
 	}
 	ctx["accounts"] = accounts
 
-	lecs, err := s.d.LECList(nil)
+	lecs, err := s.d.LECList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -132,7 +132,7 @@ func (s *Server) uiViewBillList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
-	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
+	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -147,25 +147,25 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(lec); err != nil {
+	if err := bp.Preload(r.Context(), lec); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
 	bills := []billing.Bill{}
-	accounts, err := s.d.AccountList(nil)
+	accounts, err := s.d.AccountList(r.Context(), nil)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 	for i := range accounts {
 		// Fully hydrate the underlying account.
-		account, err := s.d.AccountGet(&types.Account{ID: accounts[i].ID})
+		account, err := s.d.AccountGet(r.Context(), &types.Account{ID: accounts[i].ID})
 		if err != nil {
 			slog.Error("Potentially lost revenue while hydrating account", "account", account.ID, "error", err)
 			continue
 		}
-		bill, err := bp.BillAccount(account, lec)
+		bill, err := bp.BillAccount(r.Context(), account, lec)
 		if err != nil {
 			slog.Error("Potentially lost revenue due to billing error", "account", account.ID, "error", err)
 			continue
@@ -189,7 +189,7 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	accountID := s.strToUint(chi.URLParam(r, "id"))
-	lecs, err := s.d.LECList(&types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
+	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -200,7 +200,7 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	}
 	lec := lecs[0]
 
-	account, err := s.d.AccountGet(&types.Account{ID: accountID})
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: accountID})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
@@ -210,12 +210,12 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	// interface to the database to the billing processor.
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
-	if err := bp.Preload(lec); err != nil {
+	if err := bp.Preload(r.Context(), lec); err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
-	bill, err := bp.BillAccount(account, lec)
+	bill, err := bp.BillAccount(r.Context(), account, lec)
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
