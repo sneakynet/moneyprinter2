@@ -3,26 +3,27 @@ module github.com/sneakynet/moneyprinter2
 go 1.24.4
 
 require (
+	github.com/cespare/xxhash/v2 v2.3.0
+	github.com/expr-lang/expr v1.17.5
+	github.com/flosch/pongo2/v6 v6.0.0
+	github.com/go-chi/chi/v5 v5.2.1
+	github.com/jedib0t/go-pretty/v6 v6.6.7
+	github.com/leekchan/accounting v1.0.0
 	github.com/spf13/cobra v1.9.1
+	github.com/the-maldridge/authware v0.1.6
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.31.1
 )
 
 require (
 	github.com/GehirnInc/crypt v0.0.0-20230320061759-8cc1b52080c5 // indirect
-	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cockroachdb/apd v1.1.0 // indirect
-	github.com/expr-lang/expr v1.17.5 // indirect
-	github.com/flosch/pongo2/v6 v6.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/go-chi/chi/v5 v5.2.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/hashicorp/go-hclog v0.9.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/jedib0t/go-pretty/v6 v6.6.7 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/leekchan/accounting v1.0.0 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/mattn/go-sqlite3 v1.14.22 // indirect
 	github.com/meehow/securebytes v0.3.1 // indirect
@@ -40,7 +41,6 @@ require (
 	github.com/spf13/viper v1.20.1 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/tg123/go-htpasswd v1.2.4 // indirect
-	github.com/the-maldridge/authware v0.1.6-0.20250811011214-ba553bf067fc // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.37.0 // indirect
