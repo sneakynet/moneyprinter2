@@ -246,7 +246,7 @@ func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, wi
 		t.SetOutputMirror(w)
 		t.SetAllowedRowLength(width)
 		t.AppendHeader(table.Row{"Service Bill"})
-		t.AppendHeader(table.Row{bill.Account.BillAddr})
+		t.AppendHeader(table.Row{bill.Account.BillAddr + " - " + bill.Account.Premises[0].Address})
 		t.AppendRow(table.Row{bill.LEC.Website})
 		t.AppendRow(table.Row{bill.LEC.Name + " - " + bill.LEC.Byline})
 		t.Render()
