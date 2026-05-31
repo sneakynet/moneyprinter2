@@ -2,9 +2,13 @@ package cdr
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log/slog"
+	"strings"
 	"time"
+
+	"github.com/cespare/xxhash/v2"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
@@ -209,7 +213,7 @@ func (c *Cisco) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 
 		out = append(out, types.CDR{
 			CLLI:    clli,
-			OrigID:  cdr.CallID,
+			OrigID:  fmt.Sprintf("%X", xxhash.Sum64String(strings.Join(record, ","))),
 			LogTime: cdr.UnixTime,
 			CLID:    cdr.CLID,
 			DNIS:    cdr.DNIS,
