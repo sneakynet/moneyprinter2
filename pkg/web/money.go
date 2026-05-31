@@ -189,6 +189,7 @@ func (s *Server) uiViewAllBillsForLEC(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	accountID := s.strToUint(chi.URLParam(r, "id"))
+	slog.Debug("Billing account ID", "account", accountID)
 	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
 	if err != nil {
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
@@ -231,6 +232,48 @@ func (s *Server) uiViewBillForAccount(w http.ResponseWriter, r *http.Request) {
 	default:
 		s.formatBillsHTML(w, r, []billing.Bill{bill})
 	}
+}
+
+func (s *Server) apiBillAccount(w http.ResponseWriter, r *http.Request) {
+	accountID := s.strToUint(chi.URLParam(r, "id"))
+	slog.Debug("Billing account ID", "account", accountID)
+	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+	if len(lecs) != 1 {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": "LEC failed to load"})
+		return
+	}
+	lec := lecs[0]
+
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: accountID})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	// This is messy, but this type assertion unviels the
+	// interface to the database to the billing processor.
+	// TODO(maldridge) clean this up.
+	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
+	if err := bp.Preload(r.Context(), lec); err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	bill, err := bp.BillAccount(r.Context(), account, lec)
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
+	width := s.strToUint(r.URL.Query().Get("width"))
+	if width == 0 {
+		width = 80
+	}
+	s.formatBillsText(w, []billing.Bill{bill}, int(width))
 }
 
 func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, width int) {

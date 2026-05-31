@@ -65,6 +65,11 @@ func New(opts ...Option) (*Server, error) {
 				r.Post("/ingest", s.apiCDRIngest)
 			})
 		})
+		a.Route("/money", func(r chi.Router) {
+			r.Route("/bill", func(r chi.Router) {
+				r.Get("/account/{id}", s.apiBillAccount)
+			})
+		})
 	})
 
 	s.r.Route("/ui/admin", func(a chi.Router) {
