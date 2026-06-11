@@ -2,13 +2,13 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
-	"fmt"
-	"io"
 
 	"github.com/spf13/cobra"
 )
@@ -38,10 +38,10 @@ func billCmdRun(c *cobra.Command, args []string) {
 
 	req := &http.Request{
 		Method: http.MethodGet,
-		URL:    &url.URL{
+		URL: &url.URL{
 			Scheme: "http",
-			Host: mpAddr,
-			Path: fmt.Sprintf("/api/admin/money/bill/account/%s?lec=1", args[0]),
+			Host:   mpAddr,
+			Path:   fmt.Sprintf("/api/admin/money/bill/account/%s?lec=1", args[0]),
 			User: url.UserPassword(
 				os.Getenv("MP_USERNAME"),
 				os.Getenv("MP_PASSWORD"),

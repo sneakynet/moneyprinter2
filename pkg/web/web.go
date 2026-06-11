@@ -71,6 +71,9 @@ func New(opts ...Option) (*Server, error) {
 				r.Get("/account/{id}", s.apiBillAccount)
 			})
 		})
+		a.Route("/work", func(r chi.Router) {
+			r.Get("/statistics", s.apiWorkStatistics)
+		})
 	})
 
 	s.r.Route("/ui/admin", func(a chi.Router) {
