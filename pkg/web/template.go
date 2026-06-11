@@ -62,3 +62,16 @@ func (s *Server) filterFormatMoney(in *pongo2.Value, param *pongo2.Value) (*pong
 	ac := accounting.Accounting{Symbol: "$", Precision: 2}
 	return pongo2.AsValue(ac.FormatMoney(float64(cents) / 100)), nil
 }
+
+// filterFormatSeconds converts seconds (float64) into a human-readable
+// duration string like "1h 23m 45s".
+func (s *Server) filterFormatSeconds(in *pongo2.Value, param *pongo2.Value) (*pongo2.Value, *pongo2.Error) {
+	secs, ok := in.Interface().(float64)
+	if !ok {
+		return pongo2.AsValue(""), nil
+	}
+	h := int(secs) / 3600
+	m := (int(secs) % 3600) / 60
+	sec := int(secs) % 60
+	return pongo2.AsValue(fmt.Sprintf("%dh %dm %ds", h, m, sec)), nil
+}

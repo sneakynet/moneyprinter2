@@ -1,0 +1,174 @@
+{% extends "../../base.p2" %}
+
+{% block title %}Statistics | Moneyprinter{% endblock %}
+
+{% block content %}
+<div class="flex-container flex-row flex-center">
+  <div class="flex-item flex-max foreground box">
+    <h1>Service Consumption</h1>
+    <br />
+    <table>
+      <tr>
+        <th>Service</th>
+        <th>Slug</th>
+        <th>Count</th>
+      </tr>
+      {% for service in services %}
+      <tr>
+        <td>{{ service.Service }}</td>
+        <td>{{ service.Slug }}</td>
+        <td>{{ service.Count }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="center">No services found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Top 10 Origins by Call Volume</h1>
+    <br />
+    <table>
+      <tr>
+        <th>CLID</th>
+        <th>CNAM</th>
+        <th>Call Count</th>
+      </tr>
+      {% for origin in origins %}
+      <tr>
+        <td>{{ origin.Value }}</td>
+        <td>{{ origin.CNAM }}</td>
+        <td>{{ origin.Count }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="center">No billable call data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Top 10 Destinations by Call Volume</h1>
+    <br />
+    <table>
+      <tr>
+        <th>DNIS</th>
+        <th>CNAM</th>
+        <th>Call Count</th>
+      </tr>
+      {% for dest in destinations %}
+      <tr>
+        <td>{{ dest.Value }}</td>
+        <td>{{ dest.CNAM }}</td>
+        <td>{{ dest.Count }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3" class="center">No billable call data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Top 10 Origins by Billable Call Minutes</h1>
+    <br />
+    <table>
+      <tr>
+        <th>DN</th>
+        <th>CNAM</th>
+        <th>Total Minutes</th>
+        <th>Longest Call</th>
+      </tr>
+      {% for o in minuteOrigins %}
+      <tr>
+        <td>{{ o.Value }}</td>
+        <td>{{ o.CNAM }}</td>
+        <td>{{ o.TotalSeconds|formatDuration }}</td>
+        <td>{{ o.LongestSecond|formatDuration }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="center">No billable call data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Top 10 Destinations by Billable Call Minutes</h1>
+    <br />
+    <table>
+      <tr>
+        <th>DN</th>
+        <th>CNAM</th>
+        <th>Total Minutes</th>
+        <th>Longest Call</th>
+      </tr>
+      {% for d in minuteDestinations %}
+      <tr>
+        <td>{{ d.Value }}</td>
+        <td>{{ d.CNAM }}</td>
+        <td>{{ d.TotalSeconds|formatDuration }}</td>
+        <td>{{ d.LongestSecond|formatDuration }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="center">No billable call data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Top 25 Longest Billable Calls</h1>
+    <br />
+    <table>
+      <tr>
+        <th>Origin</th>
+        <th>Origin CNAM</th>
+        <th>Destination</th>
+        <th>Destination CNAM</th>
+        <th>Duration</th>
+      </tr>
+      {% for call in longestCalls %}
+      <tr>
+        <td>{{ call.CLID }}</td>
+        <td>{{ call.CLIDCNAM }}</td>
+        <td>{{ call.DNIS }}</td>
+        <td>{{ call.DNISCNAM }}</td>
+        <td>{{ call.Duration|formatDuration }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5" class="center">No billable call data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+    <hr />
+    <br />
+
+    <h1>Total Revenue by LEC</h1>
+    <br />
+    <table>
+      <tr>
+        <th>LEC</th>
+        <th>Total Revenue</th>
+      </tr>
+      {% for lec in lecRevenues %}
+      <tr>
+        <td>{{ lec.LECName }}</td>
+        <td>{{ lec.TotalRevenue|formatMoney }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="2" class="center">No revenue data found.</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

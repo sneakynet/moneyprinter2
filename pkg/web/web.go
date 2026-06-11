@@ -32,6 +32,7 @@ func New(opts ...Option) (*Server, error) {
 
 	pongo2.RegisterFilter("key", s.filterGetValueByKey)
 	pongo2.RegisterFilter("formatMoney", s.filterFormatMoney)
+	pongo2.RegisterFilter("formatDuration", s.filterFormatSeconds)
 
 	var tplRoot fs.FS
 	if tpath := os.Getenv("MONEYD_TEMPLATE_PATH"); tpath != "" {
@@ -223,6 +224,7 @@ func New(opts ...Option) (*Server, error) {
 		a.Route("/work", func(r chi.Router) {
 			r.Get("/premises", s.uiViewWorkPremises)
 			r.Get("/directory", s.uiViewWorkDirectory)
+			r.Get("/statistics", s.uiViewWorkStatistics)
 		})
 
 		a.Route("/money", func(r chi.Router) {

@@ -6,6 +6,7 @@ import (
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
+	"gorm.io/gorm"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
 )
@@ -89,4 +90,6 @@ type DB interface {
 	ChargeSave(context.Context, *types.Charge) (uint, error)
 	ChargeList(context.Context, *types.Charge) ([]types.Charge, error)
 	ChargeDelete(context.Context, *types.Charge) error
+
+	Raw() *gorm.DB
 }

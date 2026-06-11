@@ -39,6 +39,7 @@
         <div class="nav-dropdown">
           <a class="nav-item" href="/ui/admin/work/premises">Premises</a>
           <a class="nav-item" href="/ui/admin/work/directory">Directory</a>
+          <a class="nav-item" href="/ui/admin/work/statistics">Statistics</a>
         </div>
       </div>
       <div class="nav-container">
