@@ -40,7 +40,11 @@
             <td>{{ service.ID }}</td>
             <td>{{ service.LECService.Name }}</td>
             <td>{{ service.LECService.LEC.Name }}</td>
-            <td>{{ service.DNList }}</td>
+            <td>
+              {% for dn in service.AssignedDN %}
+              <a href="/ui/admin/dn/{{ dn.ID }}/edit">{{ dn.Number }}</a>
+              {% endfor %}
+            </td>
             <td>{{ service.EquipmentPort.Personality }} - {{ service.EquipmentPort.Number }}</td>
             <td>
               <div class="flex-container flex-row flex-center">
