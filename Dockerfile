@@ -2,6 +2,7 @@ FROM golang:1.26-alpine AS build
 RUN --mount=type=cache,target=/var/lib/apk \
     apk add tini-static sqlite-dev build-base
 
+WORKDIR /mp2
 COPY . .
 RUN --mount=type=cache,target=/go/pkg/mod \
     --mount=type=cache,target=/root/.cache/go-build \
