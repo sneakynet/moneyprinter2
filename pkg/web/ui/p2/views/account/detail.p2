@@ -79,6 +79,7 @@
             <td>{{ charge.AssessedBy.Name }}</td>
             <td>
               <div class="flex-container flex-row flex-center">
+                <a class="flex-item button" href="/ui/admin/accounts/{{ account.ID }}/charge/{{ charge.ID }}/edit">Edit</a>
                 <form method="post" action="/ui/admin/accounts/{{ account.ID }}/cancel-charge/{{ charge.ID }}">
                   <input type="submit" value="Cancel" class="flex-item button" />
                 </form>

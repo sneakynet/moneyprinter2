@@ -324,7 +324,17 @@ func (s *Server) uiViewAccountServiceCancel(w http.ResponseWriter, r *http.Reque
 }
 
 func (s *Server) uiViewAccountChargeForm(w http.ResponseWriter, r *http.Request) {
+	charges, err := s.d.ChargeList(r.Context(), &types.Charge{ID: s.strToUint(chi.URLParam(r, "cid"))})
+	if err != nil {
+		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
+		return
+	}
+
 	ctx := pongo2.Context{}
+
+	if len(charges) == 1 {
+		ctx["charge"] = charges[0]
+	}
 
 	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
 	if err != nil {
@@ -343,6 +353,7 @@ func (s *Server) uiViewAccountChargeUpsert(w http.ResponseWriter, r *http.Reques
 	}
 
 	charge := types.Charge{
+		ID:         s.strToUint(chi.URLParam(r, "cid")),
 		AccountID:  s.strToUint(chi.URLParam(r, "id")),
 		LECReferer: s.strToUint(r.FormValue("assessed_by")),
 		Item:       r.FormValue("charge_item"),

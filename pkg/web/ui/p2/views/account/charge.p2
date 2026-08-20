@@ -20,12 +20,12 @@
           <tr>
             <td><label for="charge_item">Item:</label></td>
             <td>
-              <input type="text" name="charge_item" />
+              <input type="text" name="charge_item" value="{{ charge.Item }}" />
             </td>
           </tr>
             <td><label for="charge_cost">Cost:</label></td>
             <td>
-              <input type="number" name="charge_cost" />
+              <input type="number" name="charge_cost" value="{{ charge.Cost }}" />
             </td>
           </tr>
           <tr class="center">
