@@ -239,10 +239,12 @@ func (s *Server) apiBillAccount(w http.ResponseWriter, r *http.Request) {
 	slog.Debug("Billing account ID", "account", accountID)
 	lecs, err := s.d.LECList(r.Context(), &types.LEC{ID: s.strToUint(r.URL.Query().Get("lec"))})
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 	if len(lecs) != 1 {
+		w.WriteHeader(http.StatusInternalServerError)
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": "LEC failed to load"})
 		return
 	}
@@ -250,6 +252,7 @@ func (s *Server) apiBillAccount(w http.ResponseWriter, r *http.Request) {
 
 	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: accountID})
 	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
@@ -259,12 +262,14 @@ func (s *Server) apiBillAccount(w http.ResponseWriter, r *http.Request) {
 	// TODO(maldridge) clean this up.
 	bp := billing.NewProcessor(billing.WithDatabase(s.d.(*db.DB)))
 	if err := bp.Preload(r.Context(), lec); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}
 
 	bill, err := bp.BillAccount(r.Context(), account, lec)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		s.doTemplate(w, r, "errors/internal.p2", pongo2.Context{"error": err.Error()})
 		return
 	}

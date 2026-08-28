@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"log/slog"
@@ -20,8 +19,6 @@ var (
 		Run:   billCmdRun,
 		Args:  cobra.ExactArgs(1),
 	}
-
-	billCmdLEC = 1
 )
 
 func init() {
@@ -50,21 +47,19 @@ func billCmdRun(c *cobra.Command, args []string) {
 	}
 	resp, err := cl.Do(req)
 	if err != nil {
-		slog.Error("Error uploading CDR", "error", err)
-	}
-	if resp.StatusCode != http.StatusOK {
-		msg := make(map[string]string)
-		if err := json.NewDecoder(resp.Body).Decode(&msg); err != nil {
-			slog.Error("Error encountered while decoding response", "error", err)
-			return
-		}
-
-		slog.Warn("Insert refused", "message", msg)
-	}
-	b, err := io.ReadAll(resp.Body)
-	if err != nil {
-		slog.Error("Error reading body", "error", err)
+		slog.Error("Error billing account", "error", err)
 		return
 	}
-	fmt.Println(string(b))
+	defer resp.Body.Close()
+
+	b, err := io.ReadAll(resp.Body)
+	if err != nil {
+		slog.Error("Error reading response", "error", err)
+		return
+	}
+	if resp.StatusCode != http.StatusOK {
+		slog.Error("Bill request failed", "status", resp.StatusCode, "body", string(b))
+		return
+	}
+	fmt.Print(string(b))
 }
