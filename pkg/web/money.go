@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"encoding/json"
+	"sort"
 
 	"github.com/flosch/pongo2/v6"
 	"github.com/go-chi/chi/v5"
@@ -294,7 +296,11 @@ func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, wi
 		t.SetOutputMirror(w)
 		t.SetAllowedRowLength(width)
 		t.AppendHeader(table.Row{"Service Bill"})
-		t.AppendHeader(table.Row{bill.Account.BillAddr + " - " + bill.Account.Premises[0].Address})
+		address := bill.Account.BillAddr
+		if len(bill.Account.Premises) > 0 {
+			address = bill.Account.BillAddr + " - " + bill.Account.Premises[0].Address
+		}
+		t.AppendHeader(table.Row{address})
 		t.AppendRow(table.Row{bill.LEC.Website})
 		t.AppendRow(table.Row{bill.LEC.Name + " - " + bill.LEC.Byline})
 		t.Render()
@@ -346,4 +352,35 @@ func (s *Server) formatBillsText(w http.ResponseWriter, bills []billing.Bill, wi
 func (s *Server) formatBillsHTML(w http.ResponseWriter, r *http.Request, bills []billing.Bill) {
 	ctx := pongo2.Context{"bills": bills}
 	s.doTemplate(w, r, "views/bill/bills.p2", ctx)
+}
+
+func (s *Server) apiAccountList(w http.ResponseWriter, r *http.Request) {
+	accounts, err := s.d.AccountList(r.Context(), nil)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(accounts)
+}
+
+func (s *Server) apiAccountDetail(w http.ResponseWriter, r *http.Request) {
+	account, err := s.d.AccountGet(r.Context(), &types.Account{ID: s.strToUint(chi.URLParam(r, "id"))})
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+		return
+	}
+
+	lecs := account.LECList()
+	sort.Slice(lecs, func(i, j int) bool {
+		return lecs[i].Name < lecs[j].Name
+	})
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]any{
+		"account": account,
+		"lecs":    lecs,
+	})
 }

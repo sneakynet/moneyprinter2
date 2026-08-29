@@ -9,23 +9,23 @@ import (
 type LEC struct {
 	gorm.Model
 
-	ID      uint
-	Name    string
-	Byline  string
-	Contact string
-	Website string
+	ID      uint   `json:"id"`
+	Name    string `json:"name"`
+	Byline  string `json:"byline"`
+	Contact string `json:"contact"`
+	Website string `json:"website"`
 
-	Services []LECService
+	Services []LECService `json:"services"`
 }
 
 // LECService defines a service that is provided by a LEC.
 type LECService struct {
 	gorm.Model
 
-	ID          uint
-	Name        string
-	Slug        string
-	Description string
-	LECID       uint
-	LEC         LEC
+	ID          uint `json:"id"`
+	Name        string `json:"name"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	LECID       uint `json:"lec_id"`
+	LEC         LEC `json:"lec"`
 }

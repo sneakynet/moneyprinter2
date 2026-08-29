@@ -10,14 +10,14 @@ import (
 type Account struct {
 	gorm.Model
 
-	ID       uint
-	Name     string
-	Alias    string
-	Contact  string
-	BillAddr string
+	ID       uint   `json:"id"`
+	Name     string `json:"name"`
+	Alias    string `json:"alias"`
+	Contact  string `json:"contact"`
+	BillAddr string `json:"bill_addr"`
 
-	Premises []Premise
-	Services []Service
+	Premises []Premise `json:"premises"`
+	Services []Service `json:"services"`
 }
 
 // BillText formats the account number for printing on a bill.

@@ -66,9 +66,15 @@ func New(opts ...Option) (*Server, error) {
 				r.Post("/ingest", s.apiCDRIngest)
 			})
 		})
+		// Accounts API (matches /ui/admin/accounts)
+		a.Route("/accounts", func(r chi.Router) {
+			r.Get("/", s.apiAccountList)
+			r.Get("/{id}", s.apiAccountDetail)
+		})
+		// Money API (matches /ui/admin/money)
 		a.Route("/money", func(r chi.Router) {
-			r.Route("/bill", func(r chi.Router) {
-				r.Get("/account/{id}", s.apiBillAccount)
+			r.Route("/bills", func(r chi.Router) {
+				r.Get("/by-account/{id}", s.apiBillAccount)
 			})
 		})
 		a.Route("/work", func(r chi.Router) {

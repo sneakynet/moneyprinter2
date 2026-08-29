@@ -38,7 +38,7 @@ func billCmdRun(c *cobra.Command, args []string) {
 		URL: &url.URL{
 			Scheme: "http",
 			Host:   mpAddr,
-			Path:   fmt.Sprintf("/api/admin/money/bill/account/%s?lec=1", args[0]),
+			Path:   fmt.Sprintf("/api/admin/money/bills/by-account/%s?lec=1", args[0]),
 			User: url.UserPassword(
 				os.Getenv("MP_USERNAME"),
 				os.Getenv("MP_PASSWORD"),
