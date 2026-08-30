@@ -3,6 +3,7 @@ package cmd
 import (
 	"log/slog"
 	"os"
+	"strings"
 
 	"github.com/sneakynet/moneyprinter2/internal/tui"
 	tea "github.com/charmbracelet/bubbletea"
@@ -21,7 +22,9 @@ func init() {
 
 func billuiCmdRun(_ *cobra.Command, _ []string) {
 	client := tui.NewClient()
-	m := tui.NewBillViewer(client, os.Getenv("MONEYPRINTER_GREETING"))
+	printers := tui.ParsePrinters(os.Getenv("MONEYPRINTER_PRINTERS"))
+	greeting := strings.ReplaceAll(os.Getenv("MONEYPRINTER_GREETING"), "\\n", "\n")
+	m := tui.NewBillViewer(client, greeting, printers)
 
 	p := tea.NewProgram(m, tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {

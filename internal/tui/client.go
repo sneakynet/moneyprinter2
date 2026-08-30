@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/sneakynet/moneyprinter2/pkg/types"
@@ -66,7 +67,7 @@ func (c *Client) FetchAccounts() ([]types.Account, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("accounts request failed (status %d): %s", resp.StatusCode, trimSpace(string(body)))
+		return nil, fmt.Errorf("accounts request failed (status %d): %s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 
 	var accounts []types.Account
@@ -92,7 +93,7 @@ func (c *Client) FetchLECs(accountID uint) ([]types.LEC, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("LECs request failed (status %d): %s", resp.StatusCode, trimSpace(string(body)))
+		return nil, fmt.Errorf("LECs request failed (status %d): %s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 
 	var result struct {
@@ -127,7 +128,7 @@ func (c *Client) FetchBill(accountID, lecID uint) (string, error) {
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
-		return "", fmt.Errorf("bill request failed (status %d): %s", resp.StatusCode, trimSpace(string(body)))
+		return "", fmt.Errorf("bill request failed (status %d): %s", resp.StatusCode, strings.TrimSpace(string(body)))
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -138,13 +139,33 @@ func (c *Client) FetchBill(accountID, lecID uint) (string, error) {
 	return string(body), nil
 }
 
-func trimSpace(s string) string {
-	// Minimal trim to avoid importing strings in a tight loop.
-	for len(s) > 0 && (s[0] == ' ' || s[0] == '\n' || s[0] == '\r' || s[0] == '\t') {
-		s = s[1:]
+// Printer represents a configured line printer device.
+type Printer struct {
+	Label string
+	Path  string
+}
+
+// ParsePrinters parses MONEYPRINTER_PRINTERS into a list of printers.
+// Format: "label1:/path/to/lp0,label2:/path/to/lp1,..."
+func ParsePrinters(raw string) []Printer {
+	raw = strings.TrimSpace(raw)
+	if raw == "" {
+		return nil
 	}
-	for len(s) > 0 && (s[len(s)-1] == ' ' || s[len(s)-1] == '\n' || s[len(s)-1] == '\r' || s[len(s)-1] == '\t') {
-		s = s[:len(s)-1]
+
+	var printers []Printer
+	for _, entry := range strings.Split(raw, ",") {
+		entry = strings.TrimSpace(entry)
+		if entry == "" {
+			continue
+		}
+		parts := strings.SplitN(entry, ":", 2)
+		if len(parts) == 2 {
+			printers = append(printers, Printer{
+				Label: strings.TrimSpace(parts[0]),
+				Path:  strings.TrimSpace(parts[1]),
+			})
+		}
 	}
-	return s
+	return printers
 }
