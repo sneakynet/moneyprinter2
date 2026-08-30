@@ -17,6 +17,7 @@ func (db *DB) FeeSave(ctx context.Context, f *types.Fee) (uint, error) {
 func (db *DB) FeeList(ctx context.Context, filter *types.Fee) ([]types.Fee, error) {
 	return gorm.G[types.Fee](db.d).
 		Preload("AssessedBy", nil).
+		Where(filter).
 		Find(ctx)
 }
 
