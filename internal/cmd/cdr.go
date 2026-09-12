@@ -16,6 +16,7 @@ import (
 
 var (
 	cdrFollow bool
+	cdrUpload bool
 
 	cdrCmd = &cobra.Command{
 		Use:   "cdr <CLLI> <type> <file>",
@@ -28,10 +29,10 @@ var (
 func init() {
 	rootCmd.AddCommand(cdrCmd)
 	cdrCmd.Flags().BoolVarP(&cdrFollow, "follow", "f", false, "Continuously parse and upload new CDRs as they become available")
+	cdrCmd.Flags().BoolVarP(&cdrUpload, "upload", "u", false, "Actually upload CDRs into MoneyPrinter")
 }
 
 func cdrCmdRun(c *cobra.Command, args []string) {
-	_, skipUpload := os.LookupEnv("SKIP_UPLOAD")
 	mpAddr := os.Getenv("MP_ADDR")
 	if mpAddr == "" {
 		mpAddr = "localhost:8000"
@@ -49,14 +50,14 @@ func cdrCmdRun(c *cobra.Command, args []string) {
 	}
 
 	if !cdrFollow {
-		cdrCmdBatch(args[0], args[2], parser, skipUpload, mpAddr)
+		cdrCmdBatch(args[0], args[2], parser, cdrUpload, mpAddr)
 		return
 	}
 
-	cdrCmdFollow(args[0], args[2], parser, skipUpload, mpAddr)
+	cdrCmdFollow(args[0], args[2], parser, cdrUpload, mpAddr)
 }
 
-func cdrCmdBatch(clli, file string, parser cdr.Parser, skipUpload bool, mpAddr string) {
+func cdrCmdBatch(clli, file string, parser cdr.Parser, doUpload bool, mpAddr string) {
 	f, err := os.Open(file)
 	if err != nil {
 		slog.Error("Error loading CDR", "error", err)
@@ -72,13 +73,14 @@ func cdrCmdBatch(clli, file string, parser cdr.Parser, skipUpload bool, mpAddr s
 
 	for i, r := range records {
 		slog.Info("record", "number", i, "from", r.CLID, "to", r.DNIS, "duration", r.End.Sub(r.Start))
-		if !skipUpload {
-			uploadCDR(r, mpAddr)
+		if !doUpload {
+			continue
 		}
+		uploadCDR(r, mpAddr)
 	}
 }
 
-func cdrCmdFollow(clli, file string, parser cdr.Parser, skipUpload bool, mpAddr string) {
+func cdrCmdFollow(clli, file string, parser cdr.Parser, doUpload bool, mpAddr string) {
 	f, err := os.Open(file)
 	if err != nil {
 		slog.Error("Error loading CDR", "error", err)
@@ -96,9 +98,10 @@ func cdrCmdFollow(clli, file string, parser cdr.Parser, skipUpload bool, mpAddr 
 	recordNum := 0
 	for _, r := range records {
 		slog.Info("record", "number", recordNum, "from", r.CLID, "to", r.DNIS, "duration", r.End.Sub(r.Start))
-		if !skipUpload {
-			uploadCDR(r, mpAddr)
+		if !doUpload {
+			continue
 		}
+		uploadCDR(r, mpAddr)
 		recordNum++
 	}
 
@@ -161,9 +164,10 @@ func cdrCmdFollow(clli, file string, parser cdr.Parser, skipUpload bool, mpAddr 
 
 		for _, r := range records {
 			slog.Info("record", "number", recordNum, "from", r.CLID, "to", r.DNIS, "duration", r.End.Sub(r.Start))
-			if !skipUpload {
-				uploadCDR(r, mpAddr)
+			if !doUpload {
+				continue
 			}
+			uploadCDR(r, mpAddr)
 			recordNum++
 		}
 
