@@ -190,9 +190,15 @@ func uploadCDR(r any, mpAddr string) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		msg := make(map[string]string)
-		if err := json.NewDecoder(resp.Body).Decode(&msg); err != nil {
-			slog.Error("Error encountered while decoding response", "error", err)
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			slog.Error("Error reading response body", "error", err)
+			return
+		}
+
+		var msg map[string]string
+		if err := json.Unmarshal(body, &msg); err != nil {
+			slog.Warn("Insert refused", "message", string(body))
 			return
 		}
 
