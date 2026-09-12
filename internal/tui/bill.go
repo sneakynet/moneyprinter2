@@ -2,8 +2,8 @@ package tui
 
 import (
 	"fmt"
-	"io"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -618,18 +618,35 @@ type printDoneMsg struct {
 }
 
 func (m model) printBillCmd(path string) tea.Msg {
-	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	tmp, err := os.CreateTemp("", "moneyprinter-bill-*.txt")
 	if err != nil {
-		return printDoneMsg{err: fmt.Errorf("opening printer: %w", err)}
+		return printDoneMsg{err: fmt.Errorf("creating temp file: %w", err)}
 	}
-	defer f.Close()
+	tmpName := tmp.Name()
+	defer os.Remove(tmpName)
 
-	if _, err := io.WriteString(f, m.billText); err != nil {
-		return printDoneMsg{err: fmt.Errorf("writing to printer: %w", err)}
+	if _, err := tmp.WriteString(m.billText); err != nil {
+		tmp.Close()
+		return printDoneMsg{err: fmt.Errorf("writing bill to temp file: %w", err)}
+	}
+	if err := tmp.Close(); err != nil {
+		return printDoneMsg{err: fmt.Errorf("closing temp file: %w", err)}
 	}
 
-	if err := f.Sync(); err != nil {
-		return printDoneMsg{err: fmt.Errorf("flushing printer: %w", err)}
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("tee %q", path))
+	in, err := os.Open(tmpName)
+	if err != nil {
+		return printDoneMsg{err: fmt.Errorf("reopening temp file: %w", err)}
+	}
+	cmd.Stdin = in
+	defer in.Close()
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		msg := strings.TrimSpace(string(out))
+		if msg != "" {
+			return printDoneMsg{err: fmt.Errorf("printing: %w: %s", err, msg)}
+		}
+		return printDoneMsg{err: fmt.Errorf("printing: %w", err)}
 	}
 
 	return printDoneMsg{err: nil}
