@@ -109,6 +109,11 @@ func (m *Meridian) Parse(r io.Reader, clli string) ([]types.CDR, error) {
 				cdr.DNIS = digits[len(digits)-1]
 
 				// Did this call go through ARS?
+				//
+				// If it did, and this was a trunk
+				// call, it is probably needing to be
+				// this translation:
+				// M1_ARS_TRANSLATIONS='^298\d|'
 				if cdr.DNIS[0] == 'A' {
 					cdr.DNIS = m.doARSTranslations(cdr.DNIS[1:])
 				}
