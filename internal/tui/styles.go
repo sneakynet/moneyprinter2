@@ -18,6 +18,13 @@ var (
 		Foreground(lipgloss.Color("240")).
 		MarginTop(1)
 
+	// searchBoxStyle is the list's always-visible title bar: it shows the
+	// "search accounts" label when idle and the filter input while typing.
+	// It must have no vertical margin so the bar stays exactly one line.
+	searchBoxStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("240")).
+		PaddingLeft(1)
+
 	dialogStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("231")).
 		Padding(0, 1).

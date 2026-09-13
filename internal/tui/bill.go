@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/viewport"
@@ -135,8 +136,16 @@ func NewBillViewer(client *Client, greeting string, printers []Printer) model {
 	delegate.Styles.SelectedTitle = selectedItemStyle
 	delegate.Styles.NormalTitle = itemStyle
 	accountList := list.New(nil, delegate, 0, 0)
-	accountList.Title = ""
-	accountList.Styles.Title = titleStyle
+	// The list's title bar doubles as the search box: it shows the
+	// "search accounts" label when idle and the filter input while the
+	// user is typing, so the affordance is always visible.
+	accountList.Title = "search accounts"
+	accountList.Styles.Title = searchBoxStyle
+	accountList.Styles.TitleBar = searchBoxStyle
+	accountList.KeyMap.Filter = key.NewBinding(
+		key.WithKeys("/", "f"),
+		key.WithHelp("/", "search"),
+	)
 	accountList.Styles.StatusBar = statusStyle
 	accountList.Styles.StatusBarActiveFilter = statusStyle
 	accountList.Styles.PaginationStyle = statusStyle
@@ -458,6 +467,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				item := m.accountList.SelectedItem().(accountItem)
 				m.selectedAccountID = item.account.ID
 				m.phase = "lecs"
+				// A filter left applied would otherwise make the list empty
+				// the next time the user returns to the accounts phase.
+				// SetFilterText("") also restores the Filter keybinding,
+				// which bubbles leaves disabled after applying an empty filter.
+				m.accountList.ResetFilter()
+				m.accountList.SetFilterText("")
 				m.loading = true
 				m.loadMsg = "Loading LECs..."
 				m.loadError = ""
