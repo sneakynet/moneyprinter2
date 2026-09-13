@@ -71,6 +71,10 @@ func (p *Processor) BillAccount(ctx context.Context, ac types.Account, lec types
 		slog.Warn("Error pulling account specific charges", "error", err)
 	}
 	for _, c := range charges {
+		// This should be in the database, not here.
+		if c.AssessedBy.ID != lec.ID {
+			continue
+		}
 		b.Lines = append(b.Lines, LineItem{Item: "Additional Charges", Fee: c.Item, Cost: c.Cost})
 	}
 
