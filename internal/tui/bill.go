@@ -143,6 +143,9 @@ func NewBillViewer(client *Client, greeting string, printers []Printer) model {
 	accountList.SetShowHelp(false)
 	accountList.SetShowStatusBar(false)
 	accountList.SetShowPagination(false)
+	accountList.SetShowTitle(false)
+	accountList.Styles.TitleBar = statusStyle
+	accountList.FilterInput.Placeholder = "search accounts"
 
 	// LEC list
 	lecDelegate := list.NewDefaultDelegate()
@@ -250,9 +253,8 @@ func (m model) accountsView() string {
 			"\n\n" + statusStyle.Render("Press Enter to retry, 'q' to quit")
 	}
 	m.accountList.SetWidth(dialogWidth)
-	m.accountList.SetHeight(m.height - 6)
-	dialog := title + "\n" + m.accountList.View()
-	return dialogStyle.Render(dialog)
+	m.accountList.SetHeight(m.height - 7)
+	return dialogStyle.Render(title + "\n" + m.accountList.View())
 }
 
 func (m model) lecsView() string {
@@ -353,6 +355,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.KeyMsg:
+		// While typing in the account filter, route all keys straight to the
+		// list so the global q/Esc/Enter handlers don't steal them.
+		if m.phase == "accounts" && m.accountList.SettingFilter() {
+			m.accountList, cmd = m.accountList.Update(msg)
+			return m, cmd
+		}
 		switch msg.Type {
 		case tea.KeyCtrlC:
 			if m.phase == "bill" {
